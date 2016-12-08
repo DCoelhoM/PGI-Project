@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_register"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.helpie.helpie.MainMenuActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:background="#3197d6">
+
+        <ImageView
+            app:srcCompat="@drawable/logowhite"
+            android:id="@+id/imageView"
+            android:layout_width="108dp"
+            android:layout_height="136dp"
+            android:layout_marginTop="32dp"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pedidos"
+            android:textColor="#3197d6"
+            android:id="@+id/requests"
+            android:background="@drawable/rounded_white_button"/>
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Localizações"
+            android:textColor="#3197d6"
+            android:id="@+id/locations"
+            android:background="@drawable/rounded_white_button"/>
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Desconectar"
+            android:textColor="#3197d6"
+            android:id="@+id/logout"
+            android:background="@drawable/rounded_blue_button"/>
+    </LinearLayout>
+
+</RelativeLayout>
