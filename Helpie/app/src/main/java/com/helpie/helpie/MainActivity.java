@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
             API l = new API();
             String result = l.userLogin(email, pw);
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
             JSONObject obj = null;
             try {
                 obj = new JSONObject(result);

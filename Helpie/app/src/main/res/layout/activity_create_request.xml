@@ -8,14 +8,20 @@
     tools:context="com.helpie.helpie.CreateRequestActivity">
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#3197d6">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true">
+            android:layout_centerHorizontal="true"
+
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="32dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,44 +53,45 @@
                 android:backgroundTint="#e5e4e2"
                 android:textColor="#f2f2f2" />
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Lista de Artigos:"
                     android:textColor="#f2f2f2"
-                    android:id="@+id/list_textView" />
+                    android:id="@+id/list_textView"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"/>
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/rounded_itemlist_button"
+                    android:text="-"
+                    android:layout_marginRight="28dp"
+                    android:id="@+id/minus"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true" />
+
+                <Button
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/rounded_itemlist_button"
                     android:text="+"
                     android:id="@+id/plus"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_alignParentTop="true"/>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="-"
-                    android:id="@+id/minus"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
-
-            </LinearLayout>
+            </RelativeLayout>
 
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/v_layout">
             </LinearLayout>
 
@@ -120,14 +127,33 @@
                 android:layout_height="100dp"
                 android:id="@+id/timePicker" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Criar"
-                android:id="@+id/create"
-                android:layout_gravity="center_horizontal"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="32dp"
+                android:layout_gravity="center_horizontal">
+                <Button
+                    android:layout_width="0.0dip"
+                    android:layout_height="fill_parent"
+                    android:text="Voltar"
+                    android:textColor="#3197d6"
+                    android:id="@+id/back"
+                    android:background="@drawable/rounded_blue_button"
+                    android:layout_weight="1"
+                    android:layout_marginRight="8dp" />
+                <Button
+                    android:layout_width="0.0dip"
+                    android:layout_height="fill_parent"
+                    android:text="Criar"
+                    android:textColor="#3197d6"
+                    android:id="@+id/create"
+                    android:background="@drawable/rounded_white_button"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

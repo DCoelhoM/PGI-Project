@@ -35,7 +35,7 @@ public class RequestsMenuActivity extends AppCompatActivity {
         nearbyrequests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RequestsMenuActivity.this, MainMenuActivity.class);
+                Intent intent = new Intent(RequestsMenuActivity.this, NearbyRequestsActivity.class);
                 startActivity(intent);
                 finish();
             }

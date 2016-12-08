@@ -21,7 +21,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".RequestsMenuActivity" />
-        <activity android:name=".CreateRequestActivity"></activity>
+        <activity android:name=".CreateRequestActivity" />
+        <activity android:name=".NearbyRequestsActivity"></activity>
     </application>
 
 </manifest>

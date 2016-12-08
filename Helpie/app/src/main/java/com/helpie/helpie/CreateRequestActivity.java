@@ -81,7 +81,10 @@ public class CreateRequestActivity extends AppCompatActivity {
                     locations.setAdapter(adapter);
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Não possui nenhuma localização guardada!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Não possui nenhuma localização guardada! Guarde primeiro a sua localização!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(CreateRequestActivity.this, RequestsMenuActivity.class);
+                startActivity(intent);
+                finish();
             }
         } catch (JSONException ex) {
             Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
@@ -103,7 +106,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(total_it>1){
+                if(total_it>0){
                     total_it--;
                     layout.removeView(items.get(items.size() - 1));
                     items.remove(items.size()-1);

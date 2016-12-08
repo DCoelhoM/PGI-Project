@@ -45,6 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/email"
+                android:maxLength="128"
                 android:backgroundTint="#e5e4e2"
                 android:textColor="#f2f2f2" />
 
@@ -74,21 +75,21 @@
                 <Button
                     android:layout_width="0.0dip"
                     android:layout_height="fill_parent"
-                    android:text="Entrar"
-                    android:textColor="#3197d6"
-                    android:id="@+id/login"
-                    android:background="@drawable/rounded_white_button"
-                    android:layout_weight="1"
-                    android:layout_marginRight="8dp"/>
-                <Button
-                    android:layout_width="0.0dip"
-                    android:layout_height="fill_parent"
                     android:text="Registar"
                     android:textColor="#3197d6"
                     android:id="@+id/register"
                     android:background="@drawable/rounded_white_button"
                     android:layout_weight="1"
-                    android:layout_marginLeft="8dp" />
+                    android:layout_marginRight="8dp" />
+                <Button
+                    android:layout_width="0.0dip"
+                    android:layout_height="fill_parent"
+                    android:text="Entrar"
+                    android:textColor="#3197d6"
+                    android:id="@+id/login"
+                    android:background="@drawable/rounded_white_button"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"/>
 
             </LinearLayout>
 
