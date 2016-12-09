@@ -11,6 +11,7 @@ public class RequestsMenuActivity extends AppCompatActivity {
     private Button createrequest;
     private Button nearbyrequests;
     private Button myrequests;
+    private Button acceptedrequests;
     private Button back;
 
     @Override
@@ -21,6 +22,7 @@ public class RequestsMenuActivity extends AppCompatActivity {
         createrequest = (Button) findViewById(R.id.createrequest);
         nearbyrequests = (Button) findViewById(R.id.nearbyrequests);
         myrequests = (Button) findViewById(R.id.myrequests);
+        acceptedrequests = (Button) findViewById(R.id.acceptedrequests);
         back = (Button) findViewById(R.id.back);
 
         createrequest.setOnClickListener(new View.OnClickListener() {
@@ -44,7 +46,16 @@ public class RequestsMenuActivity extends AppCompatActivity {
         myrequests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RequestsMenuActivity.this, MainMenuActivity.class);
+                Intent intent = new Intent(RequestsMenuActivity.this, RequestsMenuActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        acceptedrequests.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RequestsMenuActivity.this, MyRequestsActivity.class);
                 startActivity(intent);
                 finish();
             }

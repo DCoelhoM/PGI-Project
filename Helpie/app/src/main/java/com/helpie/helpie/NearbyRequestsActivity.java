@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,12 +22,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.util.Hashtable;
 
 
 public class NearbyRequestsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-    public static final int maxRadius = 10;
+
     GPSTracker gps;
     private GoogleMap mMap;
     private String userMarkerID;
@@ -48,8 +48,6 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
 
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
-
-
     }
 
     @Override
@@ -75,7 +73,6 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
                         int req_id = markers_info.get(marker.getId());
                         JSONObject req = requests_info.get(req_id);
 
-
                         Intent intent = new Intent(NearbyRequestsActivity.this, DetailedRequestInfoActivity.class);
                         intent.putExtra("request", req.toString());
                         startActivity(intent);
@@ -84,12 +81,11 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
                 }}
             );
 
-            findRequests(mMap, userPos);
+            findRequests(userPos);
 
         }else{
             gps.showSettingsAlert();
         }
-
     }
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -97,15 +93,15 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
         return true;
     }
 
-    public void addRequestMarker(GoogleMap mMap, int id, JSONObject req){
+    public void addRequestMarker(int id, JSONObject req){
         String title;
         Double latitude;
         Double longitude;
         LatLng point;
         try {
             title = req.getString("title");
-            latitude=req.getDouble("latitude");
-            longitude=req.getDouble("longitude");
+            latitude = req.getDouble("latitude");
+            longitude = req.getDouble("longitude");
             point = new LatLng(latitude, longitude);
 
             Marker help = mMap.addMarker(new MarkerOptions().position(point).title(title).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
@@ -115,7 +111,7 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
             e.printStackTrace();
         }
     }
-    public void findRequests(GoogleMap mMap, LatLng userPos){
+    public void findRequests(LatLng userPos){ //TODO RADIUS
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         API r = new API();
@@ -128,10 +124,12 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
                 JSONObject req;
                 int id;
                 for (int i = 0; i < requests.length(); i++) {
-                    req=requests.getJSONObject(i);
+                    req = requests.getJSONObject(i);
                     id = req.getInt("id");
-                    addRequestMarker(mMap, id, req);
+                    addRequestMarker(id, req);
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();

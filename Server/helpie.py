@@ -217,11 +217,12 @@ def listrequests():
                     owner_result = cursor.fetchall()
                     owner_name = owner_result[0][0]
                     #Feedback
-                    sql_feedback = "SELECT feedback_owner FROM requests WHERE owner_id=%i AND state='ended'" % (owner_id)
+                    sql_feedback = "SELECT feedback_owner FROM requests WHERE owner_id=%i AND state='ended' AND feedback_owner IS NOT NULL" % (owner_id)
                     cursor.execute(sql_feedback)
                     fb_result = cursor.fetchall()
-                    feedback = 0
+                    feedback = 10
                     if (len(fb_result)>0):
+                        feedback = 0
                         for fb in fb_result:
                             feedback += fb[0]
                         feedback = feedback / len(fb_result)
@@ -240,7 +241,7 @@ def listrequests():
                         items.append(item[2])
 
                     requests.append({"id": r_id, "owner": owner_name, "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M')})
-                response = {"success" : 1, "msg" : "success","requests" : requests}
+                response = {"success" : 1, "msg" : "Requests found.","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
         except:

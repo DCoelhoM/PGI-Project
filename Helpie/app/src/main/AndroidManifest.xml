@@ -31,7 +31,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDXxG_RLHp9qMgLyQwoTKljMkp3ouawSbs" />
 
-        <activity android:name=".DetailedRequestInfoActivity"></activity>
+        <activity android:name=".DetailedRequestInfoActivity" />
+        <activity android:name=".LocationsMenuActivity" />
+        <activity android:name=".SaveLocationActivity" />
+        <activity android:name=".MyLocationsActivity" />
+        <activity android:name=".MyRequestsActivity"></activity>
     </application>
 
 </manifest>

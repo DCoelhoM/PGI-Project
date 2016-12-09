@@ -33,7 +33,7 @@ public class MainMenuActivity extends AppCompatActivity {
         locations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainMenuActivity.this, null);
+                Intent intent = new Intent(MainMenuActivity.this, LocationsMenuActivity.class);
                 startActivity(intent);
                 finish();
             }

@@ -6,8 +6,7 @@
     android:id="@+id/activity_register"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.helpie.helpie.RequestsMenuActivity">
-
+    tools:context="com.helpie.helpie.LocationsMenuActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,9 +28,9 @@
             android:layout_marginLeft="64dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Criar Pedido"
+            android:text="Guardar Localização"
             android:textColor="#3197d6"
-            android:id="@+id/createrequest"
+            android:id="@+id/save"
             android:background="@drawable/rounded_white_button"/>
         <Button
             android:layout_marginTop="16dp"
@@ -39,29 +38,9 @@
             android:layout_marginLeft="64dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pedidos Próximos"
+            android:text="As Minhas Localizações"
             android:textColor="#3197d6"
-            android:id="@+id/nearbyrequests"
-            android:background="@drawable/rounded_white_button"/>
-        <Button
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="64dp"
-            android:layout_marginLeft="64dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Os Meus Pedidos"
-            android:textColor="#3197d6"
-            android:id="@+id/myrequests"
-            android:background="@drawable/rounded_white_button"/>
-        <Button
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="64dp"
-            android:layout_marginLeft="64dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pedidos Aceites"
-            android:textColor="#3197d6"
-            android:id="@+id/acceptedrequests"
+            android:id="@+id/mylocations"
             android:background="@drawable/rounded_white_button"/>
         <Button
             android:layout_marginTop="16dp"
@@ -74,5 +53,4 @@
             android:id="@+id/back"
             android:background="@drawable/rounded_blue_button"/>
     </LinearLayout>
-
 </RelativeLayout>

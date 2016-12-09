@@ -24,6 +24,7 @@ public class API {
 
     private String SAVE_LOCATION_URL = "http://138.68.146.193:5000/savelocation";
     private String MY_LOCATIONS_URL = "http://138.68.146.193:5000/mylocations";
+    private String DELETE_LOCATION_URL =  "http://138.68.146.193:5000/deletelocation";
 
     private String CREATE_REQUEST_URL = "http://138.68.146.193:5000/createrequest";
     private String ACCEPT_REQUEST_URL = "http://138.68.146.193:5000/acceptrequest";
@@ -93,6 +94,13 @@ public class API {
         location_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"";
         location_data += "}";
         return sendPOST(MY_LOCATIONS_URL,location_data);
+    }
+
+    public String deleteLocation(int loc_id){
+        String location_data = "{";
+        location_data += "\"loc_id\"" + ":" + "\"" + String.valueOf(loc_id) + "\"";
+        location_data += "}";
+        return sendPOST(DELETE_LOCATION_URL,location_data);
     }
 
     public String createRequest(int user_id, String title, String description, int loc_id, ArrayList<String> items, Date deadline){
