@@ -45,6 +45,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_request);
+
         final LinearLayout layout = (LinearLayout) findViewById(R.id.v_layout);
 
         title = (EditText) findViewById(R.id.title);
