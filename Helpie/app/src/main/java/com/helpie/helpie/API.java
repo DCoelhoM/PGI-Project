@@ -28,6 +28,8 @@ public class API {
     private String CREATE_REQUEST_URL = "http://138.68.146.193:5000/createrequest";
     private String ACCEPT_REQUEST_URL = "http://138.68.146.193:5000/acceptrequest";
 
+    private String LIST_REQUESTS_URL = "http://138.68.146.193:5000/listrequests";
+
     private String LIST_MY_REQUESTS_URL = "http://138.68.146.193:5000/listmyrequests";
     private String LIST_MY_REQUESTS_HELPER_URL = "http://138.68.146.193:5000/listmyrequests_helper";
 
@@ -93,8 +95,6 @@ public class API {
         return sendPOST(MY_LOCATIONS_URL,location_data);
     }
 
-
-
     public String createRequest(int user_id, String title, String description, int loc_id, ArrayList<String> items, Date deadline){
         String request_data = "{";
         String item_list = "[";
@@ -123,10 +123,18 @@ public class API {
         String user_data = "{";
         user_data += "\"user_id\"" + ":" + "\""+ String.valueOf(user_id) + "\"";
         user_data += "}";
+        return sendPOST(LIST_REQUESTS_URL,user_data);
+    }
+
+
+    public String listMyRequests(int user_id){
+        String user_data = "{";
+        user_data += "\"user_id\"" + ":" + "\""+ String.valueOf(user_id) + "\"";
+        user_data += "}";
         return sendPOST(LIST_MY_REQUESTS_URL,user_data);
     }
 
-    public String listRequestsHelper(int user_id){
+    public String listMyRequestsHelper(int user_id){
         String user_data = "{";
         user_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"";
         user_data += "}";
