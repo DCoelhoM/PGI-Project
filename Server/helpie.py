@@ -12,7 +12,7 @@ def register():
         data = json.loads(request.data)
         email = data['email']
         name = data['name']
-        password = data['password']
+        password = data['password'].encode('utf-8')
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
         sql_check_email = "SELECT * FROM users WHERE email='%s'" % (email)
@@ -20,9 +20,8 @@ def register():
             cursor.execute(sql_check_email)
             n_results = cursor.rowcount
             if n_results==0:
-                #encrypted_pw = bcrypt.hashpw(bpassword, bcrypt.gensalt(10))
-                #print encrypted_pw
-                sql_register = "INSERT INTO users(name, email, encrypted_password) VALUES('%s','%s','%s')" % (name,email,password)
+                encrypted_pw = bcrypt.hashpw(password, bcrypt.gensalt(10))
+                sql_register = "INSERT INTO users(name, email, encrypted_password) VALUES('%s','%s','%s')" % (name,email,encrypted_pw)
                 try:
                     cursor.execute(sql_register)
                     db.commit()
@@ -47,21 +46,21 @@ def login():
     if request.method == "POST":
         data = json.loads(request.data)
         email = data['email']
-        password = data['password']
+        password = data['password'].encode('utf-8')
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_check_email = "SELECT * FROM users WHERE email='%s'" % (email)
+        sql_check_email = "SELECT id, name, email, encrypted_password FROM users WHERE email='%s'" % (email)
         try:
             cursor.execute(sql_check_email)
             n_results = cursor.rowcount
             if n_results==1:
                 result = cursor.fetchall()
-                if (result[0][3]==password):
+                if result[0][3] == bcrypt.hashpw(password, result[0][3]):
                     response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1], "email" : result[0][2]}
                 else:
                     response = { "success" : 0, "msg" : "Wrong credentials."}
             else:
-                response = { "success" : 0, "msg" : "Error user not found."}
+                response = { "success" : 0, "msg" : "Wrong credentials."}
         except:
             response = { "success" : 0, "msg" : "Error accessing DB."}
         db.close()
