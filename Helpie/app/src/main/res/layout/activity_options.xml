@@ -41,6 +41,15 @@
             android:max="19"
             android:progress="5"
             android:id="@+id/distance" />
+        <TextView
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distância atual"
+            android:textColor="#f2f2f2"
+            android:id="@+id/value_textView" />
 
         <Button
             android:layout_marginTop="16dp"

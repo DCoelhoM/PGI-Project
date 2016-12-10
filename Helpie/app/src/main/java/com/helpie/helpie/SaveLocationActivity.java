@@ -28,6 +28,8 @@ public class SaveLocationActivity extends FragmentActivity implements OnMapReady
     GPSTracker gps;
     private GoogleMap mMap;
 
+    private Marker pos;
+
     private Double longitude;
     private Double latitude;
 
@@ -44,11 +46,10 @@ public class SaveLocationActivity extends FragmentActivity implements OnMapReady
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        String locationProviders = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if (locationProviders == null || locationProviders.equals("")) {
-
-            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-        }
+        //String locationProviders = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        //if (locationProviders == null || locationProviders.equals("")) {
+        //    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        //}
 
         name = (EditText) findViewById(R.id.name);
         save = (Button) findViewById(R.id.save);
@@ -64,7 +65,7 @@ public class SaveLocationActivity extends FragmentActivity implements OnMapReady
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
                 API r = new API();
-                String result = r.saveLocation(SaveSharedPreference.getID(SaveLocationActivity.this),n,longitude,latitude);
+                String result = r.saveLocation(SaveSharedPreference.getID(SaveLocationActivity.this),n,pos.getPosition().longitude,pos.getPosition().latitude);
                 JSONObject obj = null;
                 try {
                     obj = new JSONObject(result);
@@ -103,11 +104,36 @@ public class SaveLocationActivity extends FragmentActivity implements OnMapReady
             longitude = gps.getLongitude();
 
             LatLng userPos = new LatLng(latitude, longitude);
-            Marker pos = mMap.addMarker(new MarkerOptions().position(userPos).title("Você está aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            pos = mMap.addMarker(new MarkerOptions().position(userPos).title("Você está aqui").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)).draggable(true));
 
             mMap.moveCamera(CameraUpdateFactory.newLatLng(userPos));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15.0f));
             mMap.setOnMarkerClickListener(this);
+
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    pos.setPosition(latLng);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                }
+            });
+
+            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDragStart(Marker arg0) {
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public void onMarkerDragEnd(Marker arg0) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLng(arg0.getPosition()));
+                }
+
+                @Override
+                public void onMarkerDrag(Marker arg0) {
+                }
+            });
+
         }else{
             gps.showSettingsAlert();
         }

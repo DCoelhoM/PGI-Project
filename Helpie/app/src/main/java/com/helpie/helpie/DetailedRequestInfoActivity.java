@@ -29,6 +29,7 @@ public class DetailedRequestInfoActivity extends AppCompatActivity {
     private TextView feedback;
 
     private Button accept;
+    private Button back;
 
     private int id;
 
@@ -48,6 +49,7 @@ public class DetailedRequestInfoActivity extends AppCompatActivity {
         feedback = (TextView) findViewById(R.id.feedback);
 
         accept = (Button) findViewById(R.id.accept);
+        back = (Button) findViewById(R.id.back);
 
         Bundle data = getIntent().getExtras();
         if(data != null){
@@ -117,6 +119,15 @@ public class DetailedRequestInfoActivity extends AppCompatActivity {
                         })
                         .setIcon(0)
                         .show();
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DetailedRequestInfoActivity.this, NearbyRequestsActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

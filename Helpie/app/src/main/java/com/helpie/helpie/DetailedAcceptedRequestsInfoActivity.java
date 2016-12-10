@@ -39,6 +39,7 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
 
     private Button give_feedback;
     private Button directions;
+    private Button back;
 
     private int id;
 
@@ -67,6 +68,7 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
 
         give_feedback = (Button) findViewById(R.id.give_feedback);
         directions = (Button) findViewById(R.id.directions);
+        back = (Button) findViewById(R.id.back);
 
         Bundle data = getIntent().getExtras();
         if(data != null){
@@ -198,6 +200,15 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Por favor instale o Google Maps ou outra parecida.", Toast.LENGTH_LONG).show();
                     }
                 }
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DetailedAcceptedRequestsInfoActivity.this, AcceptedRequestsActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 

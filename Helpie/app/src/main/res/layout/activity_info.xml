@@ -23,15 +23,15 @@
             android:layout_marginTop="32dp"
             android:layout_gravity="center_horizontal" />
 
-        <TextView
+        <WebView
             android:layout_marginTop="32dp"
             android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="INFORMAÇÃO"
             android:textColor="#f2f2f2"
-            android:id="@+id/info_textView" />
+            android:background="#3197d6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/info"/>
 
         <Button
             android:layout_marginTop="16dp"

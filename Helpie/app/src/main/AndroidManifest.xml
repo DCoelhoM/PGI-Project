@@ -64,16 +64,30 @@
             android:name=".MyRequestsActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailedMyRequestsInfoActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AcceptedRequestsActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailedAcceptedRequestsInfoActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OptionsActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".InfoActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDXxG_RLHp9qMgLyQwoTKljMkp3ouawSbs" />
-
-        <activity android:name=".DetailedMyRequestsInfoActivity" />
-        <activity android:name=".AcceptedRequestsActivity" />
-        <activity android:name=".DetailedAcceptedRequestsInfoActivity" />
-        <activity android:name=".OptionsActivity" />
-        <activity android:name=".InfoActivity"></activity>
     </application>
 
 </manifest>

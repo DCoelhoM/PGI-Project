@@ -37,6 +37,7 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
     private Button give_feedback;
     private Button cancel;
     private Button finished;
+    private Button back;
 
     private int id;
 
@@ -63,6 +64,7 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
         give_feedback = (Button) findViewById(R.id.give_feedback);
         cancel = (Button) findViewById(R.id.cancel);
         finished = (Button) findViewById(R.id.finished);
+        back = (Button) findViewById(R.id.back);
 
 
 
@@ -261,6 +263,15 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                         })
                         .setIcon(0)
                         .show();
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DetailedMyRequestsInfoActivity.this, MyRequestsActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
