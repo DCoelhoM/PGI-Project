@@ -29,7 +29,7 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         API r = new API();
-        String result = r.listMyRequests(SaveSharedPreference.getID(AcceptedRequestsActivity.this));
+        String result = r.listAcceptedRequests(SaveSharedPreference.getID(AcceptedRequestsActivity.this));
         JSONObject obj = null;
         try {
             obj = new JSONObject(result);
@@ -60,7 +60,7 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
                         }
                     });
 
-                    if (state.equals("active")){
+                    if (state.equals("accepted")){
                         bt.setBackgroundResource(R.drawable.active_request);
                         active.addView(bt);
                     } else if (state.equals("ended")){
@@ -79,7 +79,7 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
     public void onRequestPressed(View v) {
         int id = v.getId();
 
-        Intent intent = new Intent(AcceptedRequestsActivity.this, DetailedMyRequestsInfoActivity.class);
+        Intent intent = new Intent(AcceptedRequestsActivity.this, DetailedAcceptedRequestsInfoActivity.class);
         intent.putExtra("id", id);
         startActivity(intent);
         finish();

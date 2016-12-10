@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -95,7 +94,7 @@ public class MyLocationsActivity extends FragmentActivity implements OnMapReadyC
                                                 Toast.makeText(getApplicationContext(), "Localização removida com sucesso!", Toast.LENGTH_LONG).show();
 
                                             } else {
-                                                Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getApplicationContext(), "Não pode apagar esta localização!(Está a ser usada em algum pedido.)", Toast.LENGTH_LONG).show();
                                             }
                                         } catch (JSONException ex) {
                                             Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();

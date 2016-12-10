@@ -55,7 +55,7 @@ public class RequestsMenuActivity extends AppCompatActivity {
         acceptedrequests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RequestsMenuActivity.this, MyRequestsActivity.class);
+                Intent intent = new Intent(RequestsMenuActivity.this, AcceptedRequestsActivity.class);
                 startActivity(intent);
                 finish();
             }

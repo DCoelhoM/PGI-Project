@@ -2,6 +2,7 @@ import MySQLdb
 import bcrypt
 import json
 from flask import *
+from math import radians, cos, sin, asin, sqrt
 app = Flask(__name__)
 
 @app.route('/register', methods=["GET", "POST"])
@@ -136,11 +137,17 @@ def deletelocation():
         loc_id = int(data['loc_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_check_email = "DELETE FROM locations WHERE id=%i" % (loc_id)
+        sql_check_loc = "SELECT * FROM requests WHERE loc_id=%i" % (loc_id)
         try:
-            cursor.execute(sql_check_email)
-            db.commit()
-            response = {"success" : 1, "msg" : "Location deleted with success."}
+            cursor.execute(sql_check_loc)
+            n_results = cursor.rowcount
+            if n_results==0:
+                sql_delete = "DELETE FROM locations WHERE id=%i" % (loc_id)
+                cursor.execute(sql_delete)
+                db.commit()
+                response = {"success" : 1, "msg" : "Location deleted with success."}
+            else:
+                response = {"success" : 0, "msg" : "Location used in requests."}
         except:
             response = { "success" : 0, "msg" : "Error accessing DB."}
         db.close()
@@ -189,15 +196,18 @@ def createrequest():
         response = {"success" : 0, "msg" : "Error."}
         return json.dumps(response)
 
-@app.route('/listrequests', methods=["GET", "POST"])
-def listrequests():
+@app.route('/nearbyrequests', methods=["GET", "POST"])
+def nearbyrequests():
     response = {}
     if request.method == "POST":
         data = json.loads(request.data)
         user_id = int(data['user_id'])
+        lat1 = float(data['latitude'])
+        long1 = float(data['longitude'])
+        dist = int(data['distance'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT * FROM requests WHERE owner_id!=%i AND state='active'" % (user_id)
+        sql_requests = "SELECT id, owner_id, title, description, loc_id, deadline FROM requests WHERE owner_id!=%i AND state='active'" % (user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -205,43 +215,47 @@ def listrequests():
                 results = cursor.fetchall()
                 requests = []
                 for row in results:
-                    r_id = row[0]
-                    owner_id = row[1]
-                    title = row[2]
-                    description = row[3]
                     loc_id = row[4]
-                    deadline = row[6]
-                    #Name
-                    sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
-                    cursor.execute(sql_owner)
-                    owner_result = cursor.fetchall()
-                    owner_name = owner_result[0][0]
-                    #Feedback
-                    sql_feedback = "SELECT feedback_owner FROM requests WHERE owner_id=%i AND state='ended' AND feedback_owner IS NOT NULL" % (owner_id)
-                    cursor.execute(sql_feedback)
-                    fb_result = cursor.fetchall()
-                    feedback = "n"
-                    if (len(fb_result)>0):
-                        feedback = 0
-                        for fb in fb_result:
-                            feedback += fb[0]
-                        feedback = feedback / len(fb_result)
                     #Location
-                    sql_loc = "SELECT * FROM locations WHERE id=%i" % (loc_id)
+                    sql_loc = "SELECT latitude, longitude FROM locations WHERE id=%i" % (loc_id)
                     cursor.execute(sql_loc)
                     loc_result =  cursor.fetchall()
-                    longitude = loc_result[0][3]
-                    latitude = loc_result[0][4]
-                    #Items
-                    sql_items = "SELECT * FROM items WHERE request_id=%i" % (r_id)
-                    cursor.execute(sql_items)
-                    items_result = cursor.fetchall()
-                    items = []
-                    for item in items_result:
-                        items.append(item[2])
+                    latitude = float(loc_result[0][0])
+                    longitude = float(loc_result[0][1])
+                    if distance(long1,lat1,longitude,latitude)<dist:
+                        r_id = row[0]
+                        owner_id = row[1]
+                        title = row[2]
+                        description = row[3]
+                        deadline = row[5]
+                        #Name
+                        sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
+                        cursor.execute(sql_owner)
+                        owner_result = cursor.fetchall()
+                        owner_name = owner_result[0][0]
+                        #Feedback
+                        sql_feedback = "SELECT feedback_owner FROM requests WHERE owner_id=%i AND state='ended' AND feedback_owner IS NOT NULL" % (owner_id)
+                        cursor.execute(sql_feedback)
+                        fb_result = cursor.fetchall()
+                        feedback = "n"
+                        if (len(fb_result)>0):
+                            feedback = 0
+                            for fb in fb_result:
+                                feedback += fb[0]
+                            feedback = feedback / len(fb_result)
+                        #Items
+                        sql_items = "SELECT info FROM items WHERE request_id=%i" % (r_id)
+                        cursor.execute(sql_items)
+                        items_result = cursor.fetchall()
+                        items = []
+                        for item in items_result:
+                            items.append(item[0])
 
-                    requests.append({"id": r_id, "owner": owner_name, "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M')})
-                response = {"success" : 1, "msg" : "Requests found.","requests" : requests}
+                        requests.append({"id": r_id, "owner": owner_name, "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M')})
+                if len(requests)>0:
+                    response = {"success" : 1, "msg" : "Requests found.","requests" : requests}
+                else:
+                    response = { "success" : 0, "msg" : "No requests found."}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
         except:
@@ -251,6 +265,16 @@ def listrequests():
     else:
         response = {"success" : 0, "msg" : "Error."}
         return json.dumps(response)
+
+def distance(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    km = 6367 * c
+    return km
 
 @app.route('/listmyrequests', methods=["GET", "POST"])
 def listmyrequests():
@@ -312,15 +336,15 @@ def listmyrequests():
         response = {"state" : 0, "msg" : "Error."}
         return json.dumps(response)
 
-@app.route('/listmyrequests_helper', methods=["GET", "POST"])
-def listmyrequests_helper():
+@app.route('/listacceptedrequests', methods=["GET", "POST"])
+def listacceptedrequests():
     response = {}
     if request.method == "POST":
         data = json.loads(request.data)
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT * FROM requests WHERE helper_id=%i" % (user_id)
+        sql_requests = "SELECT id, owner_id, title, description, loc_id, created_at, deadline, state,feedback_owner,feedback_helper FROM requests WHERE helper_id=%i" % (user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -336,26 +360,31 @@ def listmyrequests_helper():
                     created_at = row[5]
                     deadline = row[6]
                     state = row[7]
-                    feedback = row[9]
-                    feedback_helper = row[10]
+                    feedback = row[8]
+                    feedback_helper = row[9]
                     #Owner Name
                     sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
                     cursor.execute(sql_owner)
                     owner_result = cursor.fetchall()
                     owner_name = owner_result[0][0]
+                    #Helper Name
+                    sql_helper = "SELECT name FROM users WHERE id=%i" % (user_id)
+                    cursor.execute(sql_helper)
+                    helper_result = cursor.fetchall()
+                    helper_name = helper_result[0][0]
                     #Location
-                    sql_loc = "SELECT * FROM locations WHERE id=%i" % (loc_id)
+                    sql_loc = "SELECT name FROM locations WHERE id=%i" % (loc_id)
                     cursor.execute(sql_loc)
                     loc_result =  cursor.fetchall()
-                    loc_name = loc_result[0][2]
+                    loc_name = loc_result[0][0]
                     #Items
-                    sql_items = "SELECT * FROM items WHERE request_id=%i" % (r_id)
+                    sql_items = "SELECT info FROM items WHERE request_id=%i" % (r_id)
                     cursor.execute(sql_items)
                     items_result = cursor.fetchall()
                     items = []
                     for item in items_result:
-                        items.append(item[2])
-                    requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "feedback": feedback ,"feedback_helper": feedback_helper})
+                        items.append(item[0])
+                    requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "feedback": feedback ,"feedback_helper": feedback_helper, "helper": helper_name})
                 response = {"success" : 1, "msg" : "requests found","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
@@ -440,10 +469,12 @@ def requestinfo():
                 for item in items_result:
                     items.append(item[0])
                 #Location
-                sql_loc = "SELECT name FROM locations WHERE id=%i" % (loc_id)
+                sql_loc = "SELECT name, longitude, latitude FROM locations WHERE id=%i" % (loc_id)
                 cursor.execute(sql_loc)
                 loc_result =  cursor.fetchall()
                 loc_name = loc_result[0][0]
+                longitude = loc_result[0][1]
+                latitude = loc_result[0][2]
                 #Helper name
                 helper_name = ""
                 if state != "active" and state != "canceled":
@@ -454,9 +485,9 @@ def requestinfo():
                 print helper_name
 
                 if state == "active":
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state}
                 else:
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
                 print response
             else:
                 response = { "success" : 0, "msg" : "Request not found."}
@@ -492,6 +523,29 @@ def givefeedbackhelper():
         response = {"success" : 0, "msg" : "Error."}
         return json.dumps(response)
 
+@app.route("/givefeedbackowner", methods=["GET", "POST"])
+def givefeedbackowner():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        req_id = int(data['req_id'])
+        value = int(data['value'])
+        db = MySQLdb.connect("localhost","root","academica","helpie")
+        cursor = db.cursor()
+        sql_feedback = "UPDATE requests SET feedback_owner=%i WHERE id=%i" % (value, req_id)
+        try:
+            cursor.execute(sql_feedback)
+            db.commit()
+            response = { "success" : 1, "msg" : "Feedback changed with success."}
+        except:
+            db.rollback()
+            response = { "success" : 0, "msg" : "Error accessing DB."}
+        db.close()
+        return json.dumps(response)
+    else:
+        response = {"success" : 0, "msg" : "Error."}
+        return json.dumps(response)
+
 
 @app.route("/cancelrequest", methods=["GET", "POST"])
 def cancelrequest():
@@ -507,6 +561,29 @@ def cancelrequest():
             cursor.execute(sql_cancel)
             db.commit()
             response = { "success" : 1, "msg" : "Request canceled with success."}
+        except:
+            db.rollback()
+            response = { "success" : 0, "msg" : "Error accessing DB."}
+        db.close()
+        return json.dumps(response)
+    else:
+        response = {"success" : 0, "msg" : "Error."}
+        return json.dumps(response)
+
+@app.route("/finishrequest", methods=["GET", "POST"])
+def finishrequest():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        req_id = int(data['req_id'])
+        db = MySQLdb.connect("localhost","root","academica","helpie")
+        cursor = db.cursor()
+        sql_cancel = "UPDATE requests SET state='%s' WHERE id=%i" % ("ended", req_id)
+        print sql_cancel
+        try:
+            cursor.execute(sql_cancel)
+            db.commit()
+            response = { "success" : 1, "msg" : "Request finished with success."}
         except:
             db.rollback()
             response = { "success" : 0, "msg" : "Error accessing DB."}

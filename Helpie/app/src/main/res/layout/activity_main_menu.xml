@@ -48,6 +48,26 @@
             android:layout_marginLeft="64dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Opções"
+            android:textColor="#3197d6"
+            android:id="@+id/options"
+            android:background="@drawable/rounded_white_button"/>
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Informações"
+            android:textColor="#3197d6"
+            android:id="@+id/info"
+            android:background="@drawable/rounded_white_button"/>
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Desconectar"
             android:textColor="#3197d6"
             android:id="@+id/logout"

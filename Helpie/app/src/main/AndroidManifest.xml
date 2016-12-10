@@ -70,7 +70,10 @@
             android:value="AIzaSyDXxG_RLHp9qMgLyQwoTKljMkp3ouawSbs" />
 
         <activity android:name=".DetailedMyRequestsInfoActivity" />
-        <activity android:name=".AcceptedRequestsActivity"></activity>
+        <activity android:name=".AcceptedRequestsActivity" />
+        <activity android:name=".DetailedAcceptedRequestsInfoActivity" />
+        <activity android:name=".OptionsActivity" />
+        <activity android:name=".InfoActivity"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_register"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.helpie.helpie.OptionsActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="#3197d6">
+
+        <ImageView
+            app:srcCompat="@drawable/logowhite"
+            android:id="@+id/imageView"
+            android:layout_width="108dp"
+            android:layout_height="136dp"
+            android:layout_marginTop="32dp"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distância máxima dos pedidos a mostrar:\n (5 a 100km)"
+            android:textColor="#f2f2f2"
+            android:id="@+id/dist_textView" />
+
+        <SeekBar
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="19"
+            android:progress="5"
+            android:id="@+id/distance" />
+
+        <Button
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voltar"
+            android:textColor="#3197d6"
+            android:id="@+id/back"
+            android:background="@drawable/rounded_blue_button"/>
+    </LinearLayout>
+</RelativeLayout>

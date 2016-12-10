@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.helpie.helpie.DetailedMyRequestsInfoActivity">
+    tools:context="com.helpie.helpie.DetailedAcceptedRequestsInfoActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -42,6 +42,13 @@
                 android:text="Descrição"
                 android:textColor="#FFFFFF"
                 android:id="@+id/description"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Criado por"
+                android:textColor="#FFFFFF"
+                android:id="@+id/owner"
                 android:layout_marginTop="8dp" />
             <TextView
                 android:layout_width="wrap_content"
@@ -115,7 +122,7 @@
                 android:layout_marginLeft="64dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Avaliar Ajudante"
+                android:text="Avaliar Utilizador"
                 android:textColor="#3197d6"
                 android:id="@+id/give_feedback"
                 android:visibility="gone"
@@ -127,25 +134,14 @@
                 android:layout_marginLeft="64dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cancelar Pedido"
+                android:text="Direções"
                 android:visibility="gone"
                 android:textColor="#3197d6"
-                android:id="@+id/cancel"
-                android:background="@drawable/rounded_blue_button"/>
-
-            <Button
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="64dp"
-                android:layout_marginLeft="64dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Pedido Concluído"
-                android:visibility="gone"
-                android:textColor="#3197d6"
-                android:id="@+id/finished"
+                android:id="@+id/directions"
                 android:background="@drawable/rounded_white_button"/>
 
         </LinearLayout>
     </ScrollView>
+
 
 </RelativeLayout>

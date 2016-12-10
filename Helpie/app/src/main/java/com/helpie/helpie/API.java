@@ -14,7 +14,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -30,16 +29,18 @@ public class API {
     private String CREATE_REQUEST_URL = "http://138.68.146.193:5000/createrequest";
     private String ACCEPT_REQUEST_URL = "http://138.68.146.193:5000/acceptrequest";
 
-    private String LIST_REQUESTS_URL = "http://138.68.146.193:5000/listrequests";
+    private String NEARBY_REQUESTS_URL = "http://138.68.146.193:5000/nearbyrequests";
 
     private String LIST_MY_REQUESTS_URL = "http://138.68.146.193:5000/listmyrequests";
-    private String LIST_MY_REQUESTS_HELPER_URL = "http://138.68.146.193:5000/listmyrequests_helper";
+    private String LIST_ACCEPTED_REQUESTS_URL = "http://138.68.146.193:5000/listacceptedrequests";
 
     private String REQUEST_INFO_URL = "http://138.68.146.193:5000/requestinfo";
 
     private String CANCEL_REQUEST_URL = "http://138.68.146.193:5000/cancelrequest";
+    private String FINISH_REQUEST_URL = "http://138.68.146.193:5000/finishrequest";
 
-    private String GIVE_FEEDBACK_HELPER = "http://138.68.146.193:5000/givefeedbackhelper";
+    private String GIVE_FEEDBACK_HELPER_URL = "http://138.68.146.193:5000/givefeedbackhelper";
+    private String GIVE_FEEDBACK_OWNER_URL = "http://138.68.146.193:5000/givefeedbackowner";
 
     public String sendPOST(String Receiver_URL,String POST_Data){
         String response = "";
@@ -133,11 +134,11 @@ public class API {
         return sendPOST(ACCEPT_REQUEST_URL,user_data);
     }
 
-    public String listRequests(int user_id){
+    public String nearbyRequests(int user_id, double latitude, double longitude, int distance){
         String user_data = "{";
-        user_data += "\"user_id\"" + ":" + "\""+ String.valueOf(user_id) + "\"";
+        user_data += "\"user_id\"" + ":" + "\""+ String.valueOf(user_id) + "\"" + "," + "\"latitude\"" + ":" + "\""+ String.valueOf(latitude) + "\"" + "," + "\"longitude\"" + ":" + "\""+ String.valueOf(longitude) + "\"" + "," + "\"distance\"" + ":" + "\""+ String.valueOf(distance) + "\"";
         user_data += "}";
-        return sendPOST(LIST_REQUESTS_URL,user_data);
+        return sendPOST(NEARBY_REQUESTS_URL,user_data);
     }
 
 
@@ -148,11 +149,11 @@ public class API {
         return sendPOST(LIST_MY_REQUESTS_URL,user_data);
     }
 
-    public String listMyRequestsHelper(int user_id){
+    public String listAcceptedRequests(int user_id){
         String user_data = "{";
         user_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"";
         user_data += "}";
-        return sendPOST(LIST_MY_REQUESTS_HELPER_URL,user_data);
+        return sendPOST(LIST_ACCEPTED_REQUESTS_URL,user_data);
     }
 
     public String requestInfo(int req_id){
@@ -169,10 +170,24 @@ public class API {
         return sendPOST(CANCEL_REQUEST_URL,req_data);
     }
 
+    public String finishRequest(int req_id){
+        String req_data = "{";
+        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"";
+        req_data += "}";
+        return sendPOST(FINISH_REQUEST_URL,req_data);
+    }
+
     public String giveFeedbackHelper(int req_id, int value){
         String req_data = "{";
         req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"" + "," +  "\"value\"" + ":" + "\"" + String.valueOf(value) + "\"";
         req_data += "}";
-        return sendPOST(GIVE_FEEDBACK_HELPER,req_data);
+        return sendPOST(GIVE_FEEDBACK_HELPER_URL,req_data);
+    }
+
+    public String giveFeedbackOwner(int req_id, int value){
+        String req_data = "{";
+        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"" + "," +  "\"value\"" + ":" + "\"" + String.valueOf(value) + "\"";
+        req_data += "}";
+        return sendPOST(GIVE_FEEDBACK_OWNER_URL,req_data);
     }
 }

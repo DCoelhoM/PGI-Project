@@ -10,6 +10,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private Button requests;
     private Button locations;
+    private Button options;
+    private Button info;
     private Button logout;
 
     @Override
@@ -19,6 +21,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
         requests = (Button) findViewById(R.id.requests);
         locations = (Button) findViewById(R.id.locations);
+        options = (Button) findViewById(R.id.options);
+        info = (Button) findViewById(R.id.info);
         logout = (Button) findViewById(R.id.logout);
 
         requests.setOnClickListener(new View.OnClickListener() {
@@ -34,6 +38,24 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, LocationsMenuActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        options.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, OptionsActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, InfoActivity.class);
                 startActivity(intent);
                 finish();
             }

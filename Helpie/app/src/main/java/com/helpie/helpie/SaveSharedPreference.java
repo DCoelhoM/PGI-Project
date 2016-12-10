@@ -14,6 +14,7 @@ public class SaveSharedPreference {
     static final String PREF_USER_ID = "id";
     static final String PREF_USER_NAME= "username";
     static final String PREF_USER_EMAIL= "email";
+    static final String PREF_DISTANCE= "distance";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -25,6 +26,7 @@ public class SaveSharedPreference {
         editor.putInt(PREF_USER_ID, id);
         editor.putString(PREF_USER_NAME, name);
         editor.putString(PREF_USER_EMAIL, mail);
+        editor.putInt(PREF_DISTANCE, 30);
         editor.commit();
     }
 
@@ -41,6 +43,18 @@ public class SaveSharedPreference {
     public static String getEmail(Context ctx)
     {
         return getSharedPreferences(ctx).getString(PREF_USER_EMAIL, "");
+    }
+
+    public static int getDistance(Context ctx)
+    {
+        return getSharedPreferences(ctx).getInt(PREF_DISTANCE, 30);
+    }
+
+    public static void setDistance(Context ctx, int dist)
+    {
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putInt(PREF_DISTANCE, dist);
+        editor.commit();
     }
 
     public static void clearAll(Context ctx)

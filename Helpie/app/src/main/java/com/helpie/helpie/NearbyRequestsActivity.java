@@ -110,11 +110,11 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
             e.printStackTrace();
         }
     }
-    public void findRequests(LatLng userPos){ //TODO RADIUS
+    public void findRequests(LatLng userPos){
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         API r = new API();
-        String result = r.listRequests(SaveSharedPreference.getID(NearbyRequestsActivity.this));
+        String result = r.nearbyRequests(SaveSharedPreference.getID(NearbyRequestsActivity.this), userPos.latitude,userPos.longitude,SaveSharedPreference.getDistance(NearbyRequestsActivity.this));
         JSONObject obj;
         try {
             obj = new JSONObject(result);
