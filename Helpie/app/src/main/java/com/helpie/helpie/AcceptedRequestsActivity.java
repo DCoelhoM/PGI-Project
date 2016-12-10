@@ -13,27 +13,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MyRequestsActivity extends AppCompatActivity {
+public class AcceptedRequestsActivity extends AppCompatActivity {
 
     private LinearLayout active;
-    private LinearLayout accepted;
     private LinearLayout ended;
-    private LinearLayout canceled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_requests);
+        setContentView(R.layout.activity_accepted_requests);
 
         active = (LinearLayout) findViewById(R.id.active_layout);
-        accepted = (LinearLayout) findViewById(R.id.accepted_layout);
         ended = (LinearLayout) findViewById(R.id.ended_layout);
-        canceled = (LinearLayout) findViewById(R.id.canceled_layout);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         API r = new API();
-        String result = r.listMyRequests(SaveSharedPreference.getID(MyRequestsActivity.this));
+        String result = r.listMyRequests(SaveSharedPreference.getID(AcceptedRequestsActivity.this));
         JSONObject obj = null;
         try {
             obj = new JSONObject(result);
@@ -42,7 +38,7 @@ public class MyRequestsActivity extends AppCompatActivity {
                 JSONObject req;
 
                 int dpValue = 5; // margin in dips
-                float d = MyRequestsActivity.this.getResources().getDisplayMetrics().density;
+                float d = AcceptedRequestsActivity.this.getResources().getDisplayMetrics().density;
                 int margin = (int)(dpValue * d);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -54,7 +50,7 @@ public class MyRequestsActivity extends AppCompatActivity {
                     req=requests.getJSONObject(i);
                     String state = req.getString("state");
 
-                    Button bt = new Button(MyRequestsActivity.this);
+                    Button bt = new Button(AcceptedRequestsActivity.this);
                     bt.setText(req.getString("title"));
                     bt.setId(req.getInt("id"));
                     bt.setLayoutParams(params);
@@ -67,15 +63,9 @@ public class MyRequestsActivity extends AppCompatActivity {
                     if (state.equals("active")){
                         bt.setBackgroundResource(R.drawable.active_request);
                         active.addView(bt);
-                    } else if (state.equals("accepted")){
-                        bt.setBackgroundResource(R.drawable.accepted_request);
-                        accepted.addView(bt);
                     } else if (state.equals("ended")){
                         bt.setBackgroundResource(R.drawable.ended_request);
                         ended.addView(bt);
-                    } else {
-                        bt.setBackgroundResource(R.drawable.canceled_request);
-                        canceled.addView(bt);
                     }
                 }
             } else {
@@ -89,7 +79,7 @@ public class MyRequestsActivity extends AppCompatActivity {
     public void onRequestPressed(View v) {
         int id = v.getId();
 
-        Intent intent = new Intent(MyRequestsActivity.this, DetailedMyRequestsInfoActivity.class);
+        Intent intent = new Intent(AcceptedRequestsActivity.this, DetailedMyRequestsInfoActivity.class);
         intent.putExtra("id", id);
         startActivity(intent);
         finish();
@@ -97,7 +87,7 @@ public class MyRequestsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(MyRequestsActivity.this, RequestsMenuActivity.class);
+        Intent intent = new Intent(AcceptedRequestsActivity.this, RequestsMenuActivity.class);
         startActivity(intent);
         finish();
     }

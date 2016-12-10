@@ -128,7 +128,7 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
                     addRequestMarker(id, req);
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Não foram encontrados pedidos!", Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();

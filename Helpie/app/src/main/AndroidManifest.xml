@@ -69,7 +69,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDXxG_RLHp9qMgLyQwoTKljMkp3ouawSbs" />
 
-        <activity android:name=".DetailedMyRequestsInfoActivity"></activity>
+        <activity android:name=".DetailedMyRequestsInfoActivity" />
+        <activity android:name=".AcceptedRequestsActivity"></activity>
     </application>
 
 </manifest>

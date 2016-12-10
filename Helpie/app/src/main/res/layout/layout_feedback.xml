@@ -7,14 +7,14 @@
 
 
     <RatingBar
+        android:theme="@style/RatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ratingBar"
-        style="?android:attr/ratingBarStyleSmall"
         android:layout_gravity="center"
         android:clickable="true"
         android:numStars="5"
         android:stepSize="1.0"
         android:rating="3.0"
-        android:isIndicator="true"  />
+        android:isIndicator="false"  />
 </LinearLayout>

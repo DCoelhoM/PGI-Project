@@ -74,7 +74,9 @@ public class DetailedRequestInfoActivity extends AppCompatActivity {
                 deadline.setText(("Data Limite: " + request.getString("deadline")));
 
                 owner.setText(("Criado por: " + request.getString("owner")));
-                feedback.setText(("Avaliação do Utilizador: " + request.getDouble("feedback") + "/10"));
+
+                feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

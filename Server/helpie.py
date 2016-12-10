@@ -220,7 +220,7 @@ def listrequests():
                     sql_feedback = "SELECT feedback_owner FROM requests WHERE owner_id=%i AND state='ended' AND feedback_owner IS NOT NULL" % (owner_id)
                     cursor.execute(sql_feedback)
                     fb_result = cursor.fetchall()
-                    feedback = 10
+                    feedback = "n"
                     if (len(fb_result)>0):
                         feedback = 0
                         for fb in fb_result:
@@ -482,7 +482,7 @@ def givefeedbackhelper():
         try:
             cursor.execute(sql_feedback)
             db.commit()
-            response = { "success" : 1, "msg" : "Request accepted with success."}
+            response = { "success" : 1, "msg" : "Feedback changed with success."}
         except:
             db.rollback()
             response = { "success" : 0, "msg" : "Error accessing DB."}
@@ -492,6 +492,29 @@ def givefeedbackhelper():
         response = {"success" : 0, "msg" : "Error."}
         return json.dumps(response)
 
+
+@app.route("/cancelrequest", methods=["GET", "POST"])
+def cancelrequest():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        req_id = int(data['req_id'])
+        db = MySQLdb.connect("localhost","root","academica","helpie")
+        cursor = db.cursor()
+        sql_cancel = "UPDATE requests SET state='%s' WHERE id=%i" % ("canceled", req_id)
+        print sql_cancel
+        try:
+            cursor.execute(sql_cancel)
+            db.commit()
+            response = { "success" : 1, "msg" : "Request canceled with success."}
+        except:
+            db.rollback()
+            response = { "success" : 0, "msg" : "Error accessing DB."}
+        db.close()
+        return json.dumps(response)
+    else:
+        response = {"success" : 0, "msg" : "Error."}
+        return json.dumps(response)
 
 if __name__ == '__main__':
         app.run(host= '0.0.0.0',threaded=True, debug=True)

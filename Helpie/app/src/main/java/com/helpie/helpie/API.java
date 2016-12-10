@@ -14,6 +14,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -35,6 +36,8 @@ public class API {
     private String LIST_MY_REQUESTS_HELPER_URL = "http://138.68.146.193:5000/listmyrequests_helper";
 
     private String REQUEST_INFO_URL = "http://138.68.146.193:5000/requestinfo";
+
+    private String CANCEL_REQUEST_URL = "http://138.68.146.193:5000/cancelrequest";
 
     private String GIVE_FEEDBACK_HELPER = "http://138.68.146.193:5000/givefeedbackhelper";
 
@@ -159,10 +162,17 @@ public class API {
         return sendPOST(REQUEST_INFO_URL,req_data);
     }
 
+    public String cancelRequest(int req_id){
+        String req_data = "{";
+        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"";
+        req_data += "}";
+        return sendPOST(CANCEL_REQUEST_URL,req_data);
+    }
+
     public String giveFeedbackHelper(int req_id, int value){
         String req_data = "{";
-        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"" + "\"value\"" + ":" + "\"" + String.valueOf(value) + "\"";
+        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"" + "," +  "\"value\"" + ":" + "\"" + String.valueOf(value) + "\"";
         req_data += "}";
-        return sendPOST(REQUEST_INFO_URL,req_data);
+        return sendPOST(GIVE_FEEDBACK_HELPER,req_data);
     }
 }

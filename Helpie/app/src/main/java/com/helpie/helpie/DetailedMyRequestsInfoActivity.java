@@ -62,6 +62,8 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
         give_feedback = (Button) findViewById(R.id.give_feedback);
         cancel = (Button) findViewById(R.id.cancel);
 
+
+
         Bundle data = getIntent().getExtras();
         if(data != null){
             id = data.getInt("id");
@@ -114,9 +116,9 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                         helper.setVisibility(View.VISIBLE);
                     }
                     if (s.equals("ended")){
-                        feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/10"));
+                        feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
                         feedback.setVisibility(View.VISIBLE);
-                        feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/10"));
+                        feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
                         feedback_helper.setVisibility(View.VISIBLE);
                         if (request.getString("feedback_helper").equals("n")){
                             give_feedback.setVisibility(View.VISIBLE);
@@ -133,31 +135,31 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
             }
         }
+        final View alertview = ((LayoutInflater) DetailedMyRequestsInfoActivity.this.getLayoutInflater()).inflate(R.layout.layout_feedback, null);
+        final RatingBar rat = (RatingBar) alertview.findViewById(R.id.ratingBar);
+        rat.setNumStars(5);
+
         give_feedback.setOnClickListener(new View.OnClickListener() {
-            LayoutInflater inflater = DetailedMyRequestsInfoActivity.this.getLayoutInflater();
-
-            View alertview = ((LayoutInflater) DetailedMyRequestsInfoActivity.this.getLayoutInflater()).inflate(R.layout.layout_feedback, null);
-            RatingBar rat = (RatingBar) alertview.findViewById(R.id.ratingBar);
-
-
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(DetailedMyRequestsInfoActivity.this)
                         .setView(alertview)
                         .setTitle(("Avaliar " + helper_name))
-                        .setMessage("TEXTO AQUI")
+                        .setMessage("Avalie o utilizador de 0 a 5.")
                         .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                /*StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                int value = Math.round(rat.getRating());
+
+                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                                 StrictMode.setThreadPolicy(policy);
                                 API r = new API();
-                                String result = r.acceptRequest(SaveSharedPreference.getID(DetailedRequestInfoActivity.this), id);
+                                String result = r.giveFeedbackHelper(id, value);
                                 JSONObject obj = null;
                                 try {
                                     obj = new JSONObject(result);
                                     if (obj.getInt("success")==1) {
-                                        Toast.makeText(getApplicationContext(), "Pedido aceite com sucesso!", Toast.LENGTH_LONG).show();
-                                        Intent intent = new Intent(DetailedRequestInfoActivity.this, MainMenuActivity.class);
+                                        Toast.makeText(getApplicationContext(), ("Utilizador " + helper_name + " avaliado com sucesso!"), Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(DetailedMyRequestsInfoActivity.this, MyRequestsActivity.class);
                                         startActivity(intent);
                                         finish();
                                     } else {
@@ -165,7 +167,46 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                                     }
                                 } catch (JSONException ex) {
                                     Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
-                                }*/
+                                }
+                            }
+                        })
+                        .setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(0)
+                        .show();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(DetailedMyRequestsInfoActivity.this)
+                        .setTitle("Cancelar pedido.")
+                        .setMessage("Tem a certeza que pretende cancelar o pedido?")
+                        .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                StrictMode.setThreadPolicy(policy);
+                                API r = new API();
+                                String result = r.cancelRequest(id);
+                                JSONObject obj = null;
+                                try {
+                                    obj = new JSONObject(result);
+                                    if (obj.getInt("success")==1) {
+                                        Toast.makeText(getApplicationContext(), "Pedido cancelado com successo!" , Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(DetailedMyRequestsInfoActivity.this, MyRequestsActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                                    }
+                                } catch (JSONException ex) {
+                                    Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                                }
                             }
                         })
                         .setNegativeButton("Voltar", new DialogInterface.OnClickListener() {
