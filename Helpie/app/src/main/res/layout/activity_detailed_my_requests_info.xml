@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.helpie.helpie.DetailedMyRequestsInfoActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#3197d6">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Título"
+                android:textColor="#FFFFFF"
+                android:id="@+id/state"
+                android:layout_marginTop="48dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Título"
+                android:textColor="#FFFFFF"
+                android:id="@+id/title"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descrição"
+                android:textColor="#FFFFFF"
+                android:id="@+id/description"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Localização"
+                android:textColor="#FFFFFF"
+                android:id="@+id/location"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lista de Artigos:"
+                android:textColor="#FFFFFF"
+                android:id="@+id/items_list"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/v_layout"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Data Criação"
+                android:textColor="#FFFFFF"
+                android:id="@+id/created"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Data Limite"
+                android:textColor="#FFFFFF"
+                android:id="@+id/deadline"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feedback"
+                android:textColor="#FFFFFF"
+                android:id="@+id/feedback"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ajudante"
+                android:textColor="#FFFFFF"
+                android:id="@+id/helper"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feedback Ajudante"
+                android:textColor="#FFFFFF"
+                android:id="@+id/feedback_helper"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="64dp"
+                android:layout_marginLeft="64dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Avaliar Ajudante"
+                android:textColor="#3197d6"
+                android:id="@+id/give_feedback"
+                android:visibility="gone"
+                android:background="@drawable/rounded_white_button"/>
+
+            <Button
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="64dp"
+                android:layout_marginLeft="64dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cancelar Pedido"
+                android:visibility="gone"
+                android:textColor="#3197d6"
+                android:id="@+id/cancel"
+                android:background="@drawable/rounded_blue_button"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

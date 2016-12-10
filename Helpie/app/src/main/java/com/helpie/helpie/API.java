@@ -34,6 +34,9 @@ public class API {
     private String LIST_MY_REQUESTS_URL = "http://138.68.146.193:5000/listmyrequests";
     private String LIST_MY_REQUESTS_HELPER_URL = "http://138.68.146.193:5000/listmyrequests_helper";
 
+    private String REQUEST_INFO_URL = "http://138.68.146.193:5000/requestinfo";
+
+    private String GIVE_FEEDBACK_HELPER = "http://138.68.146.193:5000/givefeedbackhelper";
 
     public String sendPOST(String Receiver_URL,String POST_Data){
         String response = "";
@@ -149,4 +152,17 @@ public class API {
         return sendPOST(LIST_MY_REQUESTS_HELPER_URL,user_data);
     }
 
+    public String requestInfo(int req_id){
+        String req_data = "{";
+        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"";
+        req_data += "}";
+        return sendPOST(REQUEST_INFO_URL,req_data);
+    }
+
+    public String giveFeedbackHelper(int req_id, int value){
+        String req_data = "{";
+        req_data += "\"req_id\"" + ":" + "\"" + String.valueOf(req_id) + "\"" + "\"value\"" + ":" + "\"" + String.valueOf(value) + "\"";
+        req_data += "}";
+        return sendPOST(REQUEST_INFO_URL,req_data);
+    }
 }

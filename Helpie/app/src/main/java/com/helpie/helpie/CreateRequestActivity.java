@@ -120,39 +120,44 @@ public class CreateRequestActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String t = title.getText().toString().trim();
                 String desc = description.getText().toString().trim();
-                ArrayList<String> item_list = new ArrayList<String>();
-                for (int i=0; i < items.size();i++){
-                    item_list.add(items.get(i).getText().toString().trim());
-                }
-                String selected_location = String.valueOf(locations.getSelectedItem());
-                int loc_id = Integer.valueOf(selected_location.substring(1,selected_location.indexOf(")")));
-                String deadline_date_time = String.valueOf(deadline_date.getYear()) + "-" + String.valueOf(deadline_date.getMonth()) + "-" + String.valueOf(deadline_date.getDayOfMonth())+ " " + String.valueOf(deadline_time.getCurrentHour()) + ":" + String.valueOf(deadline_time.getCurrentMinute());
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-                Date deadline = new Date();
-                try {
-                    deadline = dateFormat.parse(deadline_date_time);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+
+                if(!t.isEmpty() && !desc.isEmpty() && confirmItems()) {
+                    ArrayList<String> item_list = new ArrayList<String>();
+                    for (int i = 0; i < items.size(); i++) {
+                        item_list.add(items.get(i).getText().toString().trim());
+                    }
+                    String selected_location = String.valueOf(locations.getSelectedItem());
+                    int loc_id = Integer.valueOf(selected_location.substring(1, selected_location.indexOf(")")));
+                    String deadline_date_time = String.valueOf(deadline_date.getYear()) + "-" + String.valueOf(deadline_date.getMonth()) + "-" + String.valueOf(deadline_date.getDayOfMonth()) + " " + String.valueOf(deadline_time.getCurrentHour()) + ":" + String.valueOf(deadline_time.getCurrentMinute());
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                    Date deadline = new Date();
+                    try {
+                        deadline = dateFormat.parse(deadline_date_time);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
 
 
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-                API r = new API();
-                String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, loc_id, item_list, deadline);
-                JSONObject obj = null;
-                try {
-                    obj = new JSONObject(result);
-                    if (obj.getInt("success")==1) {
-                        Toast.makeText(getApplicationContext(), "Pedido criado com sucesso!", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(CreateRequestActivity.this, MainMenuActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    API r = new API();
+                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, loc_id, item_list, deadline);
+                    JSONObject obj = null;
+                    try {
+                        obj = new JSONObject(result);
+                        if (obj.getInt("success") == 1) {
+                            Toast.makeText(getApplicationContext(), "Pedido criado com sucesso!", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(CreateRequestActivity.this, MainMenuActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException ex) {
                         Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
                     }
-                } catch (JSONException ex) {
-                    Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Preencha todos os campos!", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -165,5 +170,22 @@ public class CreateRequestActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public boolean confirmItems(){
+        for (int i = 0; i < items.size(); i++) {
+            if(items.get(i).getText().toString().trim().isEmpty()){
+                Toast.makeText(getApplicationContext(), "Preencha todos os campos!", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(CreateRequestActivity.this, RequestsMenuActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

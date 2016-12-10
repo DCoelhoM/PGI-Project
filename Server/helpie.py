@@ -279,7 +279,7 @@ def listmyrequests():
                     feedback = row[9]
                     feedback_helper = row[10]
                     helper_name = ""
-                    if state != "active":
+                    if state != "active" and state != "canceled":
                         #Helper Name
                         sql_helper = "SELECT name FROM users WHERE id=%i" % (helper_id)
                         cursor.execute(sql_helper)
@@ -378,11 +378,8 @@ def acceptrequest():
         cursor = db.cursor()
         sql_request = "SELECT state FROM requests WHERE id=%i FOR UPDATE" % (req_id)
         try:
-            print sql_request
             cursor.execute(sql_request)
             results = cursor.fetchall()
-            print "OLA"
-            print results[0][0]
             if (results[0][0]=="active"):
                 sql_accept = "UPDATE requests SET state='accepted', helper_id=%i WHERE id=%i" %(user_id, req_id)
                 cursor.execute(sql_accept)
@@ -391,6 +388,101 @@ def acceptrequest():
             else:
                 db.rollback()
                 response = { "success" : 0, "msg" : "Request already accepted."}
+        except:
+            db.rollback()
+            response = { "success" : 0, "msg" : "Error accessing DB."}
+        db.close()
+        return json.dumps(response)
+    else:
+        response = {"success" : 0, "msg" : "Error."}
+        return json.dumps(response)
+
+@app.route('/requestinfo', methods=["GET", "POST"])
+def requestinfo():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        req_id = int(data['req_id'])
+        db = MySQLdb.connect("localhost","root","academica","helpie")
+        cursor = db.cursor()
+        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper FROM requests WHERE id=%i" % (req_id)
+        print sql_requests
+        try:
+            cursor.execute(sql_requests)
+            n_results = cursor.rowcount
+            if n_results>0:
+                results = cursor.fetchall()
+                owner_id = results[0][0]
+                title = results[0][1]
+                description = results[0][2]
+                loc_id = results[0][3]
+                created_at = results[0][4]
+                deadline = results[0][5]
+                state = results[0][6]
+                helper_id = results[0][7]
+                feedback = results[0][8]
+                if feedback == None:
+                    feedback = "n"
+                feedback_helper = results[0][9]
+                if feedback_helper == None:
+                    feedback_helper = "n"
+                #Owner name
+                owner_name = ""
+                sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
+                cursor.execute(sql_owner)
+                owner_result = cursor.fetchall()
+                owner_name = owner_result[0][0]
+                #Items
+                sql_items = "SELECT info FROM items WHERE request_id=%i" % (req_id)
+                cursor.execute(sql_items)
+                items_result = cursor.fetchall()
+                items = []
+                for item in items_result:
+                    items.append(item[0])
+                #Location
+                sql_loc = "SELECT name FROM locations WHERE id=%i" % (loc_id)
+                cursor.execute(sql_loc)
+                loc_result =  cursor.fetchall()
+                loc_name = loc_result[0][0]
+                #Helper name
+                helper_name = ""
+                if state != "active" and state != "canceled":
+                    sql_helper = "SELECT name FROM users WHERE id=%i" % (helper_id)
+                    cursor.execute(sql_helper)
+                    helper_result = cursor.fetchall()
+                    helper_name = helper_result[0][0]
+                print helper_name
+
+                if state == "active":
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state}
+                else:
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
+                print response
+            else:
+                response = { "success" : 0, "msg" : "Request not found."}
+        except:
+            response = { "success" : 0, "msg" : "Error accessing DB."}
+        db.close()
+        print response
+        return json.dumps(response)
+    else:
+        response = {"state" : 0, "msg" : "Error."}
+        return json.dumps(response)
+
+@app.route("/givefeedbackhelper", methods=["GET", "POST"])
+def givefeedbackhelper():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        req_id = int(data['req_id'])
+        value = int(data['value'])
+        db = MySQLdb.connect("localhost","root","academica","helpie")
+        cursor = db.cursor()
+        sql_feedback = "UPDATE requests SET feedback_helper=%i WHERE id=%i" % (value, req_id)
+        try:
+            cursor.execute(sql_feedback)
+            db.commit()
+            response = { "success" : 1, "msg" : "Request accepted with success."}
         except:
             db.rollback()
             response = { "success" : 0, "msg" : "Error accessing DB."}
