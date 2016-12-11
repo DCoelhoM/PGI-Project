@@ -8,6 +8,8 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -75,9 +77,9 @@ public class CreateRequestActivity extends AppCompatActivity {
 
         deadline = (TextView) findViewById(R.id.deadline);
         deadline_date_time  = Calendar.getInstance();
-        deadline.setText(dateFormat_PT.format(deadline_date_time.getTime()));
-
-
+        SpannableString data_content = new SpannableString(dateFormat_PT.format(deadline_date_time.getTime()));
+        data_content.setSpan(new UnderlineSpan(), 0, data_content.length(), 0);
+        deadline.setText(data_content);
 
         deadline.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +88,9 @@ public class CreateRequestActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
                         deadline_date_time.set(deadline_date_time.get(Calendar.YEAR), deadline_date_time.get(Calendar.MONTH), deadline_date_time.get(Calendar.DAY_OF_MONTH),hourOfDay,minute);
-                        deadline.setText(dateFormat_PT.format(deadline_date_time.getTime()));
+                        SpannableString data_content = new SpannableString(dateFormat_PT.format(deadline_date_time.getTime()));
+                        data_content.setSpan(new UnderlineSpan(), 0, data_content.length(), 0);
+                        deadline.setText(data_content);
                     }
 
                 },deadline_date_time.get(Calendar.HOUR_OF_DAY),deadline_date_time.get(Calendar.MINUTE),true);
@@ -95,7 +99,9 @@ public class CreateRequestActivity extends AppCompatActivity {
                 deadline_date_picker = new DatePickerDialog(CreateRequestActivity.this, new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         deadline_date_time.set(year, monthOfYear, dayOfMonth);
-                        deadline.setText(dateFormat_PT.format(deadline_date_time.getTime()));
+                        SpannableString data_content = new SpannableString(dateFormat_PT.format(deadline_date_time.getTime()));
+                        data_content.setSpan(new UnderlineSpan(), 0, data_content.length(), 0);
+                        deadline.setText(data_content);
                     }
                 },deadline_date_time.get(Calendar.YEAR), deadline_date_time.get(Calendar.MONTH), deadline_date_time.get(Calendar.DAY_OF_MONTH));
                 deadline_date_picker.show();

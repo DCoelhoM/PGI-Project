@@ -62,7 +62,7 @@ def login():
             if n_results==1:
                 result = cursor.fetchall()
                 if result[0][4] == bcrypt.hashpw(password, result[0][4]):
-                    response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1], "email" : result[0][2], "contact" : result[0][3]}
+                    response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1].decode('latin1'), "email" : result[0][2], "contact" : result[0][3]}
                 else:
                     response = { "success" : 0, "msg" : "Wrong credentials."}
             else:
@@ -121,7 +121,7 @@ def mylocations():
                     name = row[1]
                     longitude = row[2]
                     latitude = row[3]
-                    locations.append({"id": loc_id, "name" : name, "longitude" : str(longitude), "latitude" : str(latitude)})
+                    locations.append({"id": loc_id, "name" : name.decode('latin1'), "longitude" : str(longitude), "latitude" : str(latitude)})
                 response = {"success" : 1, "locations" : locations}
             else:
                 response = { "success" : 0, "msg" : "No locations found."}
@@ -254,9 +254,9 @@ def nearbyrequests():
                         items_result = cursor.fetchall()
                         items = []
                         for item in items_result:
-                            items.append(item[0])
+                            items.append(item[0].decode('latin1'))
 
-                        requests.append({"id": r_id, "owner": owner_name, "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M')})
+                        requests.append({"id": r_id, "owner": owner_name.decode('latin1'), "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M')})
                 if len(requests)>0:
                     response = {"success" : 1, "msg" : "Requests found.","requests" : requests}
                 else:
@@ -320,16 +320,16 @@ def listmyrequests():
                     loc_result =  cursor.fetchall()
                     loc_name = loc_result[0][2]
                     #Items
-                    sql_items = "SELECT * FROM items WHERE request_id=%i" % (r_id)
+                    sql_items = "SELECT info FROM items WHERE request_id=%i" % (r_id)
                     cursor.execute(sql_items)
                     items_result = cursor.fetchall()
                     items = []
                     for item in items_result:
-                        items.append(item[2])
+                        items.append(item[0].decode('latin1'))
                     if state == "active":
-                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state})
+                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state})
                     else:
-                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "feedback": feedback ,"feedback_helper": feedback_helper})
+                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name.decode('latin1'), "feedback": feedback ,"feedback_helper": feedback_helper})
                 response = {"success" : 1, "msg" : "success","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
@@ -389,8 +389,8 @@ def listacceptedrequests():
                     items_result = cursor.fetchall()
                     items = []
                     for item in items_result:
-                        items.append(item[0])
-                    requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact":contact, "feedback": feedback ,"feedback_helper": feedback_helper, "helper": helper_name})
+                        items.append(item[0].decode('latin1'))
+                    requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact":contact, "feedback": feedback ,"feedback_helper": feedback_helper, "helper": helper_name.decode('latin1')})
                 response = {"success" : 1, "msg" : "requests found","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
@@ -435,7 +435,7 @@ def acceptrequest():
                 client.messages.create(
                     to="+351"+contact,
                     from_="++13524780150",
-                    body="[HELPIE] O seu pedido " + title + " foi aceite por " + helper_name + ".",
+                    body="[HELPIE] O seu pedido " + title.decode('latin1') + " foi aceite por " + helper_name.decode('latin1') + ".",
                 )
 
                 response = { "success" : 1, "msg" : "Request accepted with success."}
@@ -506,7 +506,7 @@ def requestinfo():
                 items_result = cursor.fetchall()
                 items = []
                 for item in items_result:
-                    items.append(item[0])
+                    items.append(item[0].decode('latin1'))
 
                 #Location
                 sql_loc = "SELECT name, longitude, latitude FROM locations WHERE id=%i" % (loc_id)
@@ -537,9 +537,9 @@ def requestinfo():
                         total_feedback_helper = total_feedback_helper / len(total_fb_helper_result)
 
                 if state == "active" and state == "canceled":
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact}
                 else:
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "helper_contact": helper_contact, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "helper_contact": helper_contact, "helper": helper_name.decode('latin1'), "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
             else:
                 response = { "success" : 0, "msg" : "Request not found."}
         except:

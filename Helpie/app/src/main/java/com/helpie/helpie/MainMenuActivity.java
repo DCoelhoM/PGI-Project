@@ -3,6 +3,7 @@ package com.helpie.helpie;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +27,11 @@ public class MainMenuActivity extends AppCompatActivity {
         options = (Button) findViewById(R.id.options);
         info = (Button) findViewById(R.id.info);
         logout = (Button) findViewById(R.id.logout);
+
+        String locationProviders = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if (locationProviders == null || locationProviders.equals("")) {
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
 
         requests.setOnClickListener(new View.OnClickListener() {
             @Override
