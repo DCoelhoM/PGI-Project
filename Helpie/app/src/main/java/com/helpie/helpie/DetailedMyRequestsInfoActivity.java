@@ -18,6 +18,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
     private TextView state;
     private TextView title;
     private TextView description;
+    private TextView contact;
     private TextView location;
     private TextView items_list;
     private TextView created;
@@ -53,6 +55,7 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
         state = (TextView) findViewById(R.id.state);
         title = (TextView) findViewById(R.id.title);
         description = (TextView) findViewById(R.id.description);
+        contact = (TextView) findViewById(R.id.contact);
         location = (TextView) findViewById(R.id.location);
         created = (TextView) findViewById(R.id.created);
         deadline = (TextView) findViewById(R.id.deadline);
@@ -65,8 +68,6 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
         cancel = (Button) findViewById(R.id.cancel);
         finished = (Button) findViewById(R.id.finished);
         back = (Button) findViewById(R.id.back);
-
-
 
         Bundle data = getIntent().getExtras();
         if(data != null){
@@ -93,6 +94,8 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                     title.setText(("Título: " + request.getString("title")));
 
                     description.setText(("Descrição: " + request.getString("description")));
+
+                    contact.setText(("Contacto: " + request.getString("contact")));
 
                     location.setText(("Localização: " + request.getString("location")));
 

@@ -48,6 +48,17 @@
                 android:id="@+id/ended_layout">
             </LinearLayout>
 
+            <Button
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="64dp"
+                android:layout_marginLeft="64dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Voltar"
+                android:textColor="#3197d6"
+                android:id="@+id/back"
+                android:background="@drawable/rounded_blue_button"/>
+
         </LinearLayout>
     </ScrollView>
 

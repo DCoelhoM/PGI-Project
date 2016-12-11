@@ -103,7 +103,7 @@ def mylocations():
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_check_email = "SELECT * FROM locations WHERE user_id=%i" % (user_id)
+        sql_check_email = "SELECT id, name, longitude, latitude FROM locations WHERE user_id=%i" % (user_id)
         try:
             cursor.execute(sql_check_email)
             n_results = cursor.rowcount
@@ -112,9 +112,9 @@ def mylocations():
                 locations = []
                 for row in results:
                     loc_id = row[0]
-                    name = row[2]
-                    longitude = row[3]
-                    latitude = row[4]
+                    name = row[1]
+                    longitude = row[2]
+                    latitude = row[3]
                     locations.append({"id": loc_id, "name" : name, "longitude" : str(longitude), "latitude" : str(latitude)})
                 response = {"success" : 1, "locations" : locations}
             else:
@@ -168,6 +168,7 @@ def createrequest():
         item_list = data['list']
         loc_id = int(data['loc_id'])
         deadline = data['deadline']
+        contact = data['contact']
 
         #from datetime import datetime
         #datetime_object = datetime.strptime(deadline,'%Y-%m-%d %H:%M')
@@ -176,7 +177,7 @@ def createrequest():
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
 
-        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s')" % (user_id,title,desc,loc_id,deadline)
+        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline, contact) VALUES(%i,'%s','%s',%i,'%s','%s')" % (user_id,title,desc,loc_id,deadline,contact)
         try:
             cursor.execute(sql_loc)
             db.commit()
@@ -283,8 +284,9 @@ def listmyrequests():
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT * FROM requests WHERE owner_id=%i" % (user_id)
+        sql_requests = "SELECT id, title, description, loc_id, created_at, deadline, state, helper_id, feedback_owner, feedback_helper, contact FROM requests WHERE owner_id=%i" % (user_id)
         try:
+            print sql_requests
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
             if n_results>0:
@@ -292,15 +294,17 @@ def listmyrequests():
                 requests = []
                 for row in results:
                     r_id = row[0]
-                    title = row[2]
-                    description = row[3]
-                    loc_id = row[4]
-                    created_at = row[5]
-                    deadline = row[6]
-                    state = row[7]
-                    helper_id = row[8]
-                    feedback = row[9]
-                    feedback_helper = row[10]
+                    title = row[1]
+                    description = row[2]
+                    loc_id = row[3]
+                    created_at = row[4]
+                    deadline = row[5]
+                    state = row[6]
+                    helper_id = row[7]
+                    feedback = row[8]
+                    feedback_helper = row[9]
+                    contact = row[10]
+                    print contact
                     helper_name = ""
                     if state != "active" and state != "canceled":
                         #Helper Name
@@ -321,9 +325,9 @@ def listmyrequests():
                     for item in items_result:
                         items.append(item[2])
                     if state == "active":
-                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state})
+                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact})
                     else:
-                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "feedback": feedback ,"feedback_helper": feedback_helper})
+                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact, "helper": helper_name, "feedback": feedback ,"feedback_helper": feedback_helper})
                 response = {"success" : 1, "msg" : "success","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
@@ -343,7 +347,7 @@ def listacceptedrequests():
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT id, owner_id, title, description, loc_id, created_at, deadline, state,feedback_owner,feedback_helper FROM requests WHERE helper_id=%i" % (user_id)
+        sql_requests = "SELECT id, owner_id, title, description, loc_id, created_at, deadline, state, feedback_owner, feedback_helper, contact FROM requests WHERE helper_id=%i" % (user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -361,6 +365,7 @@ def listacceptedrequests():
                     state = row[7]
                     feedback = row[8]
                     feedback_helper = row[9]
+                    contact = row[10]
                     #Owner Name
                     sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
                     cursor.execute(sql_owner)
@@ -383,7 +388,7 @@ def listacceptedrequests():
                     items = []
                     for item in items_result:
                         items.append(item[0])
-                    requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "feedback": feedback ,"feedback_helper": feedback_helper, "helper": helper_name})
+                    requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact":contact, "feedback": feedback ,"feedback_helper": feedback_helper, "helper": helper_name})
                 response = {"success" : 1, "msg" : "requests found","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
@@ -433,7 +438,7 @@ def requestinfo():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper FROM requests WHERE id=%i" % (req_id)
+        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper,contact FROM requests WHERE id=%i" % (req_id)
         print sql_requests
         try:
             cursor.execute(sql_requests)
@@ -454,6 +459,7 @@ def requestinfo():
                 feedback_helper = results[0][9]
                 if feedback_helper == None:
                     feedback_helper = "n"
+                contact = results[0][10]
                 #Owner name
                 owner_name = ""
                 sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
@@ -484,9 +490,9 @@ def requestinfo():
                 print helper_name
 
                 if state == "active":
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact}
                 else:
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
                 print response
             else:
                 response = { "success" : 0, "msg" : "Request not found."}

@@ -18,6 +18,8 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
     private LinearLayout active;
     private LinearLayout ended;
 
+    private Button back;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +27,8 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
 
         active = (LinearLayout) findViewById(R.id.active_layout);
         ended = (LinearLayout) findViewById(R.id.ended_layout);
+
+        back = (Button) findViewById(R.id.back);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -74,6 +78,15 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
         } catch (JSONException ex) {
             Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
         }
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AcceptedRequestsActivity.this, RequestsMenuActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     public void onRequestPressed(View v) {

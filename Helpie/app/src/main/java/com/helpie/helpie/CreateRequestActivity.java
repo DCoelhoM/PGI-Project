@@ -1,5 +1,7 @@
 package com.helpie.helpie;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.StrictMode;
@@ -13,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -23,6 +26,7 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class CreateRequestActivity extends AppCompatActivity {
@@ -31,15 +35,22 @@ public class CreateRequestActivity extends AppCompatActivity {
 
     private EditText title;
     private EditText description;
+    private EditText contact;
     private ArrayList<EditText> items;
     private Spinner locations;
-    private DatePicker deadline_date;
-    private TimePicker deadline_time;
+
+    private TextView deadline;
+    private DatePickerDialog deadline_date_picker;
+    private TimePickerDialog deadline_time_picker;
+    private Calendar deadline_date_time;
+    SimpleDateFormat dateFormat_PT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
     private Button plus;
     private Button minus;
     private Button create;
     private Button back;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +61,49 @@ public class CreateRequestActivity extends AppCompatActivity {
 
         title = (EditText) findViewById(R.id.title);
         description = (EditText) findViewById(R.id.description);
+        contact = (EditText) findViewById(R.id.contact);
+
         items = new ArrayList<>();
+
         locations = (Spinner) findViewById(R.id.locations);
-        deadline_date = (DatePicker) findViewById(R.id.datePicker);
-        deadline_time = (TimePicker) findViewById(R.id.timePicker);
-        deadline_time.setIs24HourView(true);
 
         plus = (Button) findViewById(R.id.plus);
         minus = (Button) findViewById(R.id.minus);
 
         create = (Button) findViewById(R.id.create);
         back = (Button) findViewById(R.id.back);
+
+
+
+        deadline = (TextView) findViewById(R.id.deadline);
+        deadline_date_time  = Calendar.getInstance();
+        deadline.setText(dateFormat_PT.format(deadline_date_time.getTime()));
+
+
+
+        deadline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deadline_time_picker = new TimePickerDialog(CreateRequestActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+                        deadline_date_time.set(deadline_date_time.get(Calendar.YEAR), deadline_date_time.get(Calendar.MONTH), deadline_date_time.get(Calendar.DAY_OF_MONTH),hourOfDay,minute);
+                        deadline.setText(dateFormat_PT.format(deadline_date_time.getTime()));
+                    }
+
+                },deadline_date_time.get(Calendar.HOUR_OF_DAY),deadline_date_time.get(Calendar.MINUTE),true);
+                deadline_time_picker.show();
+
+                deadline_date_picker = new DatePickerDialog(CreateRequestActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        deadline_date_time.set(year, monthOfYear, dayOfMonth);
+                        deadline.setText(dateFormat_PT.format(deadline_date_time.getTime()));
+                    }
+                },deadline_date_time.get(Calendar.YEAR), deadline_date_time.get(Calendar.MONTH), deadline_date_time.get(Calendar.DAY_OF_MONTH));
+                deadline_date_picker.show();
+            }
+        });
+
 
         //GET LOCATIONS
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -120,28 +163,20 @@ public class CreateRequestActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String t = title.getText().toString().trim();
                 String desc = description.getText().toString().trim();
+                String cont = contact.getText().toString().trim();
 
-                if(!t.isEmpty() && !desc.isEmpty() && confirmItems()) {
+                if(!t.isEmpty() && !desc.isEmpty() && !cont.isEmpty() && confirmItems()) {
                     ArrayList<String> item_list = new ArrayList<String>();
                     for (int i = 0; i < items.size(); i++) {
                         item_list.add(items.get(i).getText().toString().trim());
                     }
                     String selected_location = String.valueOf(locations.getSelectedItem());
                     int loc_id = Integer.valueOf(selected_location.substring(1, selected_location.indexOf(")")));
-                    String deadline_date_time = String.valueOf(deadline_date.getYear()) + "-" + String.valueOf(deadline_date.getMonth()) + "-" + String.valueOf(deadline_date.getDayOfMonth()) + " " + String.valueOf(deadline_time.getCurrentHour()) + ":" + String.valueOf(deadline_time.getCurrentMinute());
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-                    Date deadline = new Date();
-                    try {
-                        deadline = dateFormat.parse(deadline_date_time);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
 
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
                     API r = new API();
-                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, loc_id, item_list, deadline);
+                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, cont, loc_id, item_list, deadline_date_time.getTime());
                     JSONObject obj = null;
                     try {
                         obj = new JSONObject(result);

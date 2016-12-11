@@ -24,11 +24,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Título"
+                android:text="Estado"
                 android:textColor="#FFFFFF"
                 android:id="@+id/state"
                 android:layout_marginTop="48dp" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,6 +48,13 @@
                 android:text="Criado por"
                 android:textColor="#FFFFFF"
                 android:id="@+id/owner"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contacto"
+                android:textColor="#FFFFFF"
+                android:id="@+id/contact"
                 android:layout_marginTop="8dp" />
             <TextView
                 android:layout_width="wrap_content"

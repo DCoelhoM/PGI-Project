@@ -29,6 +29,7 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
     private TextView title;
     private TextView description;
     private TextView owner;
+    private TextView contact;
     private TextView location;
     private TextView items_list;
     private TextView created;
@@ -58,6 +59,7 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
         title = (TextView) findViewById(R.id.title);
         description = (TextView) findViewById(R.id.description);
         owner = (TextView) findViewById(R.id.owner);
+        contact = (TextView) findViewById(R.id.contact);
         location = (TextView) findViewById(R.id.location);
         created = (TextView) findViewById(R.id.created);
         deadline = (TextView) findViewById(R.id.deadline);
@@ -94,6 +96,8 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
 
                     owner_name = request.getString("owner");
                     owner.setText(("Criado por: " + owner_name));
+
+                    contact.setText(("Contacto: " + request.getString("contact")));
 
                     location.setText(("Localização: " + request.getString("location")));
                     latitude = request.getString("latitude");

@@ -46,6 +46,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Contacto"
+                android:textColor="#FFFFFF"
+                android:id="@+id/contact"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Localização"
                 android:textColor="#FFFFFF"
                 android:id="@+id/location"
