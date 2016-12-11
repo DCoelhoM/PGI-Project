@@ -16,11 +16,13 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 public class DetailedRequestInfoActivity extends AppCompatActivity {
 
     private JSONObject request;
+    private TextView info;
     private TextView title;
     private TextView description;
     private TextView items_list;
@@ -41,6 +43,7 @@ public class DetailedRequestInfoActivity extends AppCompatActivity {
 
         final LinearLayout layout = (LinearLayout) findViewById(R.id.v_layout);
 
+        info = (TextView) findViewById((R.id.info));
         title = (TextView) findViewById(R.id.title);
         description = (TextView) findViewById(R.id.description);
         deadline = (TextView) findViewById(R.id.deadline);
@@ -56,6 +59,11 @@ public class DetailedRequestInfoActivity extends AppCompatActivity {
             try {
                 request = new JSONObject(data.getString("request"));
                 id = request.getInt("id");
+
+                if (request.get("type").equals("voluntary")){
+                    info.setVisibility(View.VISIBLE);
+                }
+
                 title.setText(("Título: " + request.getString("title")));
 
                 description.setText(("Descrição: " + request.getString("description")));

@@ -101,8 +101,12 @@ public class NearbyRequestsActivity extends FragmentActivity implements OnMapRea
             latitude = req.getDouble("latitude");
             longitude = req.getDouble("longitude");
             point = new LatLng(latitude, longitude);
-
-            Marker help = mMap.addMarker(new MarkerOptions().position(point).title(title).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            Marker help;
+            if (req.getString("type").equals("normal")) {
+                 help = mMap.addMarker(new MarkerOptions().position(point).title(title).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            } else {
+                help = mMap.addMarker(new MarkerOptions().position(point).title(("[Voluntariado]"+title)).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+            }
             markers_info.put(help.getId(),id);
             requests_info.put(id,req);
         } catch (JSONException e) {

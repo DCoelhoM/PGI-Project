@@ -109,9 +109,9 @@ def mylocations():
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_check_email = "SELECT id, name, longitude, latitude FROM locations WHERE user_id=%i" % (user_id)
+        sql_loc = "SELECT id, name, longitude, latitude FROM locations WHERE user_id=%i" % (user_id)
         try:
-            cursor.execute(sql_check_email)
+            cursor.execute(sql_loc)
             n_results = cursor.rowcount
             if n_results>0:
                 results = cursor.fetchall()
@@ -182,8 +182,18 @@ def createrequest():
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
 
-        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s')" % (user_id,title,desc,loc_id,deadline)
+        sql_type = "SELECT type FROM users WHERE id=%i" % (user_id)
+
+
         try:
+            cursor.execute(sql_type)
+            type_results = cursor.fetchall()
+            user_type = type_results[0][0]
+            sql_loc = ""
+            if user_type == "normal":
+                sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s')" % (user_id,title,desc,loc_id,deadline)
+            else:
+                sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline, type) VALUES(%i,'%s','%s',%i,'%s','%s')" % (user_id,title,desc,loc_id,deadline, "voluntary")
             cursor.execute(sql_loc)
             db.commit()
             req_id=cursor.lastrowid
@@ -212,7 +222,7 @@ def nearbyrequests():
         dist = int(data['distance'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT id, owner_id, title, description, loc_id, deadline FROM requests WHERE owner_id!=%i AND state='active'" % (user_id)
+        sql_requests = "SELECT id, owner_id, title, description, loc_id, deadline, type FROM requests WHERE owner_id!=%i AND (id, %i) NOT IN (SELECT req_id, user_id FROM voluntary_helpers) AND state='active'" % (user_id,user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -233,6 +243,7 @@ def nearbyrequests():
                         title = row[2]
                         description = row[3]
                         deadline = row[5]
+                        req_type = row[6]
                         #Name
                         sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
                         cursor.execute(sql_owner)
@@ -256,7 +267,7 @@ def nearbyrequests():
                         for item in items_result:
                             items.append(item[0].decode('latin1'))
 
-                        requests.append({"id": r_id, "owner": owner_name.decode('latin1'), "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M')})
+                        requests.append({"id": r_id, "owner": owner_name.decode('latin1'), "feedback": feedback,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "longitude": str(longitude), "latitude": str(latitude),"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "type": req_type})
                 if len(requests)>0:
                     response = {"success" : 1, "msg" : "Requests found.","requests" : requests}
                 else:
@@ -411,11 +422,11 @@ def acceptrequest():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_request = "SELECT state, title, owner_id FROM requests WHERE id=%i FOR UPDATE" % (req_id)
+        sql_request = "SELECT state, title, owner_id, type, n_helpers FROM requests WHERE id=%i FOR UPDATE" % (req_id)
         try:
             cursor.execute(sql_request)
             results = cursor.fetchall()
-            if (results[0][0]=="active"):
+            if results[0][0]=="active" and results[0][3]=="normal":
                 sql_accept = "UPDATE requests SET state='accepted', helper_id=%i WHERE id=%i" %(user_id, req_id)
                 cursor.execute(sql_accept)
                 title = results[0][1]
@@ -437,7 +448,14 @@ def acceptrequest():
                     from_="++13524780150",
                     body="[HELPIE] O seu pedido " + title.decode('latin1') + " foi aceite por " + helper_name.decode('latin1') + ".",
                 )
-
+                response = { "success" : 1, "msg" : "Request accepted with success."}
+            elif results[0][0]=="active" and results[0][3]=="voluntary":
+                n_helpers = results[0][4]
+                sql_accept = "UPDATE requests SET n_helpers=%i WHERE id=%i" %(n_helpers+1, req_id)
+                cursor.execute(sql_accept)
+                sql_add_helper = "INSERT INTO voluntary_helpers(req_id,user_id) VALUES (%i,%i)" % (req_id,user_id)
+                cursor.execute(sql_add_helper)
+                db.commit()
                 response = { "success" : 1, "msg" : "Request accepted with success."}
             else:
                 db.rollback()
@@ -459,7 +477,7 @@ def requestinfo():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper FROM requests WHERE id=%i" % (req_id)
+        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper, type FROM requests WHERE id=%i" % (req_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -473,6 +491,7 @@ def requestinfo():
                 deadline = results[0][5]
                 state = results[0][6]
                 helper_id = results[0][7]
+                req_type =results[0][10]
 
                 feedback = results[0][8]
                 if feedback == None:
@@ -537,9 +556,9 @@ def requestinfo():
                         total_feedback_helper = total_feedback_helper / len(total_fb_helper_result)
 
                 if state == "active" and state == "canceled":
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "type": req_type}
                 else:
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "helper_contact": helper_contact, "helper": helper_name.decode('latin1'), "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "type": req_type, "helper_contact": helper_contact, "helper": helper_name.decode('latin1'), "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
             else:
                 response = { "success" : 0, "msg" : "Request not found."}
         except:

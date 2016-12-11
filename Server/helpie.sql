@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 11, 2016 at 04:02 PM
+-- Generation Time: Dec 11, 2016 at 11:12 PM
 -- Server version: 5.7.16-0ubuntu0.16.04.1
 -- PHP Version: 7.0.8-0ubuntu0.16.04.3
 
@@ -68,7 +68,9 @@ CREATE TABLE `requests` (
   `state` varchar(16) NOT NULL DEFAULT 'active',
   `helper_id` int(11) DEFAULT NULL,
   `feedback_owner` int(11) DEFAULT NULL,
-  `feedback_helper` int(11) DEFAULT NULL
+  `feedback_helper` int(11) DEFAULT NULL,
+  `type` varchar(16) NOT NULL DEFAULT 'normal',
+  `n_helpers` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -84,7 +86,20 @@ CREATE TABLE `users` (
   `email` varchar(128) NOT NULL,
   `contact` varchar(9) NOT NULL,
   `encrypted_password` varchar(80) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(16) NOT NULL DEFAULT 'normal'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `voluntary_helpers`
+--
+
+DROP TABLE IF EXISTS `voluntary_helpers`;
+CREATE TABLE `voluntary_helpers` (
+  `req_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -120,6 +135,13 @@ ALTER TABLE `requests`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `voluntary_helpers`
+--
+ALTER TABLE `voluntary_helpers`
+  ADD PRIMARY KEY (`req_id`,`user_id`),
+  ADD KEY `voluntary_helpers_ibfk_2` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -168,6 +190,13 @@ ALTER TABLE `requests`
   ADD CONSTRAINT `requests_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `requests_ibfk_2` FOREIGN KEY (`loc_id`) REFERENCES `locations` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `requests_ibfk_3` FOREIGN KEY (`helper_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `voluntary_helpers`
+--
+ALTER TABLE `voluntary_helpers`
+  ADD CONSTRAINT `voluntary_helpers_ibfk_1` FOREIGN KEY (`req_id`) REFERENCES `requests` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `voluntary_helpers_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
