@@ -42,7 +42,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name:"
+                    android:text="Nome:"
                     android:maxLength="32"
                     android:textColor="#f2f2f2"
                     android:id="@+id/name_textView" />
@@ -72,7 +72,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Password:"
+                    android:text="Palavra-passe:"
                     android:textColor="#f2f2f2"
                     android:id="@+id/pw_textView" />
 
@@ -88,7 +88,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Confirm Password:"
+                    android:text="Confirmar Palavra-passe:"
                     android:textColor="#f2f2f2"
                     android:id="@+id/cpw_textView" />
 
