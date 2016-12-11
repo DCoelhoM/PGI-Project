@@ -78,8 +78,8 @@ public class MainMenuActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)
-                .setTitle("Exit?")
-                .setMessage("Are you sure you want to exit?")
+                .setTitle("Sair?")
+                .setMessage("Tem a certeza que pretende sair?")
                 .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
