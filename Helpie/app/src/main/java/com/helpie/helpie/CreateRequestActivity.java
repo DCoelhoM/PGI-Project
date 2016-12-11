@@ -182,7 +182,7 @@ public class CreateRequestActivity extends AppCompatActivity {
                         obj = new JSONObject(result);
                         if (obj.getInt("success") == 1) {
                             Toast.makeText(getApplicationContext(), "Pedido criado com sucesso!", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(CreateRequestActivity.this, MainMenuActivity.class);
+                            Intent intent = new Intent(CreateRequestActivity.this, RequestsMenuActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
