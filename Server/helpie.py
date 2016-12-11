@@ -286,7 +286,6 @@ def listmyrequests():
         cursor = db.cursor()
         sql_requests = "SELECT id, title, description, loc_id, created_at, deadline, state, helper_id, feedback_owner, feedback_helper, contact FROM requests WHERE owner_id=%i" % (user_id)
         try:
-            print sql_requests
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
             if n_results>0:
@@ -304,7 +303,6 @@ def listmyrequests():
                     feedback = row[8]
                     feedback_helper = row[9]
                     contact = row[10]
-                    print contact
                     helper_name = ""
                     if state != "active" and state != "canceled":
                         #Helper Name
@@ -439,7 +437,6 @@ def requestinfo():
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
         sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper,contact FROM requests WHERE id=%i" % (req_id)
-        print sql_requests
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -487,19 +484,15 @@ def requestinfo():
                     cursor.execute(sql_helper)
                     helper_result = cursor.fetchall()
                     helper_name = helper_result[0][0]
-                print helper_name
-
                 if state == "active":
                     response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact}
                 else:
                     response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
-                print response
             else:
                 response = { "success" : 0, "msg" : "Request not found."}
         except:
             response = { "success" : 0, "msg" : "Error accessing DB."}
         db.close()
-        print response
         return json.dumps(response)
     else:
         response = {"state" : 0, "msg" : "Error."}
@@ -561,7 +554,6 @@ def cancelrequest():
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
         sql_cancel = "UPDATE requests SET state='%s' WHERE id=%i" % ("canceled", req_id)
-        print sql_cancel
         try:
             cursor.execute(sql_cancel)
             db.commit()
@@ -583,10 +575,9 @@ def finishrequest():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_cancel = "UPDATE requests SET state='%s' WHERE id=%i" % ("ended", req_id)
-        print sql_cancel
+        sql_finish = "UPDATE requests SET state='%s' WHERE id=%i" % ("ended", req_id)
         try:
-            cursor.execute(sql_cancel)
+            cursor.execute(sql_finish)
             db.commit()
             response = { "success" : 1, "msg" : "Request finished with success."}
         except:

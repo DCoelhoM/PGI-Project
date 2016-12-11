@@ -23,11 +23,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.LinkedList;
 
 public class CreateRequestActivity extends AppCompatActivity {
 
@@ -50,7 +49,8 @@ public class CreateRequestActivity extends AppCompatActivity {
     private Button create;
     private Button back;
 
-
+    LinkedList<String> loc_array = new LinkedList<>();
+    LinkedList<Integer> loc_array_id = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +112,6 @@ public class CreateRequestActivity extends AppCompatActivity {
         String result = r.myLocations(SaveSharedPreference.getID(CreateRequestActivity.this));
         JSONObject obj = null;
 
-        ArrayList<String> loc_array = new ArrayList<>();
         try {
             obj = new JSONObject(result);
             if (obj.getInt("success")==1) {
@@ -120,10 +119,11 @@ public class CreateRequestActivity extends AppCompatActivity {
                 JSONObject loc;
                 for (int i = 0; i < locs.length(); i++) {
                     loc=locs.getJSONObject(i);
-                    loc_array.add("(" + String.valueOf(loc.getInt("id")) + ") -> " + loc.getString("name"));
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, loc_array);
-                    locations.setAdapter(adapter);
+                    loc_array.addLast(loc.getString("name"));
+                    loc_array_id.addLast(loc.getInt("id"));
                 }
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, loc_array);
+                locations.setAdapter(adapter);
             } else {
                 Toast.makeText(getApplicationContext(), "Não possui nenhuma localização guardada! Guarde primeiro a sua localização!", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(CreateRequestActivity.this, RequestsMenuActivity.class);
@@ -170,8 +170,8 @@ public class CreateRequestActivity extends AppCompatActivity {
                     for (int i = 0; i < items.size(); i++) {
                         item_list.add(items.get(i).getText().toString().trim());
                     }
-                    String selected_location = String.valueOf(locations.getSelectedItem());
-                    int loc_id = Integer.valueOf(selected_location.substring(1, selected_location.indexOf(")")));
+
+                    int loc_id = loc_array_id.get(locations.getSelectedItemPosition());
 
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
