@@ -182,7 +182,7 @@ def createrequest():
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
 
-        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s','%s')" % (user_id,title,desc,loc_id,deadline)
+        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s')" % (user_id,title,desc,loc_id,deadline)
         try:
             cursor.execute(sql_loc)
             db.commit()
