@@ -35,8 +35,10 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
     private TextView created;
     private TextView deadline;
     private TextView feedback;
+    private TextView feedback_total;
     private TextView helper;
     private TextView feedback_helper;
+    private TextView feedback_total_helper;
 
     private Button give_feedback;
     private Button directions;
@@ -65,8 +67,10 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
         deadline = (TextView) findViewById(R.id.deadline);
         items_list = (TextView) findViewById(R.id.items_list);
         feedback = (TextView) findViewById(R.id.feedback);
+        feedback_total = (TextView) findViewById(R.id.feedback_total);
         helper = (TextView) findViewById(R.id.helper);
         feedback_helper = (TextView) findViewById(R.id.feedback_helper);
+        feedback_total_helper = (TextView) findViewById(R.id.feedback_total_helper);
 
         give_feedback = (Button) findViewById(R.id.give_feedback);
         directions = (Button) findViewById(R.id.directions);
@@ -99,6 +103,8 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
 
                     contact.setText(("Contacto: " + request.getString("contact")));
 
+                    feedback_total.setText(("Avaliação Total do Utilizador: " + request.getString("feedback_total") + "/5"));
+
                     location.setText(("Localização: " + request.getString("location")));
                     latitude = request.getString("latitude");
                     longitude = request.getString("longitude");
@@ -129,6 +135,7 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
                         feedback.setVisibility(View.VISIBLE);
                         feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
                         feedback_helper.setVisibility(View.VISIBLE);
+                        feedback_total_helper.setText(("Avaliação Total do Ajudante: " + request.getString("feedback_total_helper") + "/5"));
                         if (request.getString("feedback").equals("n")){
                             give_feedback.setVisibility(View.VISIBLE);
                         }

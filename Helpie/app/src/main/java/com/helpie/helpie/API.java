@@ -75,9 +75,9 @@ public class API {
         return response;
     }
 
-    public String userRegister(String name, String email, String password){
+    public String userRegister(String name, String email, String contact, String password){
         String register_data = "{";
-        register_data += "\"name\"" + ":" + "\"" + name + "\"" + "," + "\"email\"" + ":" + "\"" + email + "\"" + "," + "\"password\"" + ":" + "\"" + password + "\"";
+        register_data += "\"name\"" + ":" + "\"" + name + "\"" + "," + "\"email\"" + ":" + "\"" + email + "\"" + "," + "\"contact\"" + ":" + "\"" + contact + "\"" + "," + "\"password\"" + ":" + "\"" + password + "\"";
         register_data += "}";
         return sendPOST(REGISTER_URL,register_data);
     }
@@ -110,7 +110,7 @@ public class API {
         return sendPOST(DELETE_LOCATION_URL,location_data);
     }
 
-    public String createRequest(int user_id, String title, String description, String contact,int loc_id, ArrayList<String> items, Date deadline){
+    public String createRequest(int user_id, String title, String description,int loc_id, ArrayList<String> items, Date deadline){
         String request_data = "{";
         String item_list = "[";
         for (int i=0; i < items.size(); i++){
@@ -122,7 +122,7 @@ public class API {
         item_list +="]";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String deadline_date = dateFormat.format(deadline);
-        request_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"" + "," + "\"title\"" + ":" + "\"" + title + "\"" + "," + "\"description\"" + ":" + "\"" + description + "\"" + "," + "\"contact\"" + ":" + "\"" + contact + "\"" + "," + "\"loc_id\"" + ":" + "\"" + String.valueOf(loc_id) + "\"" + "," + "\"list\"" + ":" + item_list  + "," + "\"deadline\"" + ":" + "\"" + deadline_date + "\"";
+        request_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"" + "," + "\"title\"" + ":" + "\"" + title + "\"" + "," + "\"description\"" + ":" + "\"" + description + "\"" + "," + "\"loc_id\"" + ":" + "\"" + String.valueOf(loc_id) + "\"" + "," + "\"list\"" + ":" + item_list  + "," + "\"deadline\"" + ":" + "\"" + deadline_date + "\"";
         request_data += "}";
         return sendPOST(CREATE_REQUEST_URL,request_data);
     }

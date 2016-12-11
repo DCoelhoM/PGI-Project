@@ -3,7 +3,12 @@ import bcrypt
 import json
 from flask import *
 from math import radians, cos, sin, asin, sqrt
+from twilio.rest import TwilioRestClient
+
 app = Flask(__name__)
+
+ACCOUNT_SID = "AC6f4c1c6567e83cc9058040575fc461a7"
+AUTH_TOKEN = "6142d40846a01bf62ba09f8e10ee894d"
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -12,6 +17,7 @@ def register():
         data = json.loads(request.data)
         email = data['email']
         name = data['name']
+        contact = data['contact']
         password = data['password'].encode('utf-8')
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
@@ -21,7 +27,7 @@ def register():
             n_results = cursor.rowcount
             if n_results==0:
                 encrypted_pw = bcrypt.hashpw(password, bcrypt.gensalt(10))
-                sql_register = "INSERT INTO users(name, email, encrypted_password) VALUES('%s','%s','%s')" % (name,email,encrypted_pw)
+                sql_register = "INSERT INTO users(name, email, contact, encrypted_password) VALUES('%s','%s','%s','%s')" % (name,email,contact,encrypted_pw)
                 try:
                     cursor.execute(sql_register)
                     db.commit()
@@ -49,14 +55,14 @@ def login():
         password = data['password'].encode('utf-8')
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_check_email = "SELECT id, name, email, encrypted_password FROM users WHERE email='%s'" % (email)
+        sql_check_email = "SELECT id, name, email, contact, encrypted_password FROM users WHERE email='%s'" % (email)
         try:
             cursor.execute(sql_check_email)
             n_results = cursor.rowcount
             if n_results==1:
                 result = cursor.fetchall()
-                if result[0][3] == bcrypt.hashpw(password, result[0][3]):
-                    response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1], "email" : result[0][2]}
+                if result[0][4] == bcrypt.hashpw(password, result[0][4]):
+                    response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1], "email" : result[0][2], "contact" : result[0][3]}
                 else:
                     response = { "success" : 0, "msg" : "Wrong credentials."}
             else:
@@ -168,7 +174,6 @@ def createrequest():
         item_list = data['list']
         loc_id = int(data['loc_id'])
         deadline = data['deadline']
-        contact = data['contact']
 
         #from datetime import datetime
         #datetime_object = datetime.strptime(deadline,'%Y-%m-%d %H:%M')
@@ -177,7 +182,7 @@ def createrequest():
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
 
-        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline, contact) VALUES(%i,'%s','%s',%i,'%s','%s')" % (user_id,title,desc,loc_id,deadline,contact)
+        sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s','%s')" % (user_id,title,desc,loc_id,deadline)
         try:
             cursor.execute(sql_loc)
             db.commit()
@@ -284,7 +289,7 @@ def listmyrequests():
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT id, title, description, loc_id, created_at, deadline, state, helper_id, feedback_owner, feedback_helper, contact FROM requests WHERE owner_id=%i" % (user_id)
+        sql_requests = "SELECT id, title, description, loc_id, created_at, deadline, state, helper_id, feedback_owner, feedback_helper FROM requests WHERE owner_id=%i" % (user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -302,7 +307,6 @@ def listmyrequests():
                     helper_id = row[7]
                     feedback = row[8]
                     feedback_helper = row[9]
-                    contact = row[10]
                     helper_name = ""
                     if state != "active" and state != "canceled":
                         #Helper Name
@@ -323,9 +327,9 @@ def listmyrequests():
                     for item in items_result:
                         items.append(item[2])
                     if state == "active":
-                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact})
+                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state})
                     else:
-                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact, "helper": helper_name, "feedback": feedback ,"feedback_helper": feedback_helper})
+                        requests.append({"id": r_id,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "helper": helper_name, "feedback": feedback ,"feedback_helper": feedback_helper})
                 response = {"success" : 1, "msg" : "success","requests" : requests}
             else:
                 response = { "success" : 0, "msg" : "No requests found."}
@@ -345,7 +349,7 @@ def listacceptedrequests():
         user_id = int(data['user_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT id, owner_id, title, description, loc_id, created_at, deadline, state, feedback_owner, feedback_helper, contact FROM requests WHERE helper_id=%i" % (user_id)
+        sql_requests = "SELECT id, owner_id, title, description, loc_id, created_at, deadline, state, feedback_owner, feedback_helper FROM requests WHERE helper_id=%i" % (user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -363,12 +367,12 @@ def listacceptedrequests():
                     state = row[7]
                     feedback = row[8]
                     feedback_helper = row[9]
-                    contact = row[10]
-                    #Owner Name
-                    sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
+                    #Owner Name and Contact
+                    sql_owner = "SELECT name, contact FROM users WHERE id=%i" % (owner_id)
                     cursor.execute(sql_owner)
                     owner_result = cursor.fetchall()
                     owner_name = owner_result[0][0]
+                    contact = owner_result[0][1]
                     #Helper Name
                     sql_helper = "SELECT name FROM users WHERE id=%i" % (user_id)
                     cursor.execute(sql_helper)
@@ -407,14 +411,33 @@ def acceptrequest():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_request = "SELECT state FROM requests WHERE id=%i FOR UPDATE" % (req_id)
+        sql_request = "SELECT state, title, owner_id FROM requests WHERE id=%i FOR UPDATE" % (req_id)
         try:
             cursor.execute(sql_request)
             results = cursor.fetchall()
             if (results[0][0]=="active"):
                 sql_accept = "UPDATE requests SET state='accepted', helper_id=%i WHERE id=%i" %(user_id, req_id)
                 cursor.execute(sql_accept)
+                title = results[0][1]
+                #Helper name
+                sql_helper = "SELECT name FROM users WHERE id=%i" % (user_id)
+                cursor.execute(sql_helper)
+                helper_result = cursor.fetchall()
+                helper_name = helper_result[0][0]
+
+                sql_contact = "SELECT contact FROM users WHERE id=%i" % (owner_id)
+                cursor.execute(sql_helper)
+                contact_result = cursor.fetchall()
+                contact = contact_result[0][0]
                 db.commit()
+
+                client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
+                client.messages.create(
+                    to="+351"+contact,
+                    from_="++13524780150",
+                    body="[HELPIE] O seu pedido " + title + " foi aceite por " + helper_name + ".",
+                )
+
                 response = { "success" : 1, "msg" : "Request accepted with success."}
             else:
                 db.rollback()
@@ -436,7 +459,7 @@ def requestinfo():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper,contact FROM requests WHERE id=%i" % (req_id)
+        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper FROM requests WHERE id=%i" % (req_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -450,19 +473,33 @@ def requestinfo():
                 deadline = results[0][5]
                 state = results[0][6]
                 helper_id = results[0][7]
+
                 feedback = results[0][8]
                 if feedback == None:
                     feedback = "n"
+                #Feedback
+                sql_total_feedback = "SELECT feedback_owner FROM requests WHERE owner_id=%i AND state='ended' AND feedback_owner IS NOT NULL" % (owner_id)
+                cursor.execute(sql_total_feedback)
+                total_fb_result = cursor.fetchall()
+                total_feedback = "n"
+                if (len(total_fb_result)>0):
+                    total_feedback = 0
+                    for fb in total_fb_result:
+                        total_feedback += fb[0]
+                    total_feedback = total_feedback / len(total_fb_result)
+
                 feedback_helper = results[0][9]
                 if feedback_helper == None:
                     feedback_helper = "n"
-                contact = results[0][10]
-                #Owner name
+
+                #Owner name and contat
                 owner_name = ""
-                sql_owner = "SELECT name FROM users WHERE id=%i" % (owner_id)
+                sql_owner = "SELECT name, contact FROM users WHERE id=%i" % (owner_id)
                 cursor.execute(sql_owner)
                 owner_result = cursor.fetchall()
                 owner_name = owner_result[0][0]
+                owner_contact = owner_result[0][1]
+
                 #Items
                 sql_items = "SELECT info FROM items WHERE request_id=%i" % (req_id)
                 cursor.execute(sql_items)
@@ -470,6 +507,7 @@ def requestinfo():
                 items = []
                 for item in items_result:
                     items.append(item[0])
+
                 #Location
                 sql_loc = "SELECT name, longitude, latitude FROM locations WHERE id=%i" % (loc_id)
                 cursor.execute(sql_loc)
@@ -477,17 +515,31 @@ def requestinfo():
                 loc_name = loc_result[0][0]
                 longitude = loc_result[0][1]
                 latitude = loc_result[0][2]
-                #Helper name
+
+                #Helper name and contact
                 helper_name = ""
+                helper_contact = ""
+                total_feedback_helper = "n"
                 if state != "active" and state != "canceled":
-                    sql_helper = "SELECT name FROM users WHERE id=%i" % (helper_id)
+                    sql_helper = "SELECT name, contact FROM users WHERE id=%i" % (helper_id)
                     cursor.execute(sql_helper)
                     helper_result = cursor.fetchall()
                     helper_name = helper_result[0][0]
-                if state == "active":
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact}
+                    helper_contact = helper_result[0][1]
+                    #Feedback helper
+                    sql_total_feedback_helper = "SELECT feedback_helper FROM requests WHERE helper_id=%i AND state='ended' AND feedback_helper IS NOT NULL" % (helper_id)
+                    cursor.execute(sql_total_feedback_helper)
+                    total_fb_helper_result = cursor.fetchall()
+                    if (len(total_fb_helper_result)>0):
+                        total_feedback_helper = 0
+                        for fb in total_fb_helper_result:
+                            total_feedback_helper += fb[0]
+                        total_feedback_helper = total_feedback_helper / len(total_fb_helper_result)
+
+                if state == "active" and state == "canceled":
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact}
                 else:
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": contact, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name,"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name, "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "helper_contact": helper_contact, "helper": helper_name, "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
             else:
                 response = { "success" : 0, "msg" : "Request not found."}
         except:

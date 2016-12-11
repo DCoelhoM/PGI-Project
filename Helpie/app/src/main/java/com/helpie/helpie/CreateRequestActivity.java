@@ -34,7 +34,6 @@ public class CreateRequestActivity extends AppCompatActivity {
 
     private EditText title;
     private EditText description;
-    private EditText contact;
     private ArrayList<EditText> items;
     private Spinner locations;
 
@@ -61,7 +60,6 @@ public class CreateRequestActivity extends AppCompatActivity {
 
         title = (EditText) findViewById(R.id.title);
         description = (EditText) findViewById(R.id.description);
-        contact = (EditText) findViewById(R.id.contact);
 
         items = new ArrayList<>();
 
@@ -163,9 +161,8 @@ public class CreateRequestActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String t = title.getText().toString().trim();
                 String desc = description.getText().toString().trim();
-                String cont = contact.getText().toString().trim();
 
-                if(!t.isEmpty() && !desc.isEmpty() && !cont.isEmpty() && confirmItems()) {
+                if(!t.isEmpty() && !desc.isEmpty() && confirmItems()) {
                     ArrayList<String> item_list = new ArrayList<String>();
                     for (int i = 0; i < items.size(); i++) {
                         item_list.add(items.get(i).getText().toString().trim());
@@ -176,7 +173,7 @@ public class CreateRequestActivity extends AppCompatActivity {
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
                     API r = new API();
-                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, cont, loc_id, item_list, deadline_date_time.getTime());
+                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, loc_id, item_list, deadline_date_time.getTime());
                     JSONObject obj = null;
                     try {
                         obj = new JSONObject(result);

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 11, 2016 at 01:05 AM
+-- Generation Time: Dec 11, 2016 at 04:02 PM
 -- Server version: 5.7.16-0ubuntu0.16.04.1
 -- PHP Version: 7.0.8-0ubuntu0.16.04.3
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `helpie`
 --
+CREATE DATABASE IF NOT EXISTS `helpie` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `helpie`;
 
 -- --------------------------------------------------------
 
@@ -26,6 +28,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `items`
 --
 
+DROP TABLE IF EXISTS `items`;
 CREATE TABLE `items` (
   `id` int(11) NOT NULL,
   `request_id` int(11) NOT NULL,
@@ -38,6 +41,7 @@ CREATE TABLE `items` (
 -- Table structure for table `locations`
 --
 
+DROP TABLE IF EXISTS `locations`;
 CREATE TABLE `locations` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -52,6 +56,7 @@ CREATE TABLE `locations` (
 -- Table structure for table `requests`
 --
 
+DROP TABLE IF EXISTS `requests`;
 CREATE TABLE `requests` (
   `id` int(11) NOT NULL,
   `owner_id` int(11) NOT NULL,
@@ -63,8 +68,7 @@ CREATE TABLE `requests` (
   `state` varchar(16) NOT NULL DEFAULT 'active',
   `helper_id` int(11) DEFAULT NULL,
   `feedback_owner` int(11) DEFAULT NULL,
-  `feedback_helper` int(11) DEFAULT NULL,
-  `contact` varchar(9) NOT NULL
+  `feedback_helper` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -73,10 +77,12 @@ CREATE TABLE `requests` (
 -- Table structure for table `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(32) NOT NULL,
   `email` varchar(128) NOT NULL,
+  `contact` varchar(9) NOT NULL,
   `encrypted_password` varchar(80) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

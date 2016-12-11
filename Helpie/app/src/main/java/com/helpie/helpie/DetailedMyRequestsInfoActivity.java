@@ -33,8 +33,10 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
     private TextView created;
     private TextView deadline;
     private TextView feedback;
+    private TextView feedback_total;
     private TextView helper;
     private TextView feedback_helper;
+    private TextView feedback_total_helper;
 
     private Button give_feedback;
     private Button cancel;
@@ -61,8 +63,10 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
         deadline = (TextView) findViewById(R.id.deadline);
         items_list = (TextView) findViewById(R.id.items_list);
         feedback = (TextView) findViewById(R.id.feedback);
+        feedback_total = (TextView) findViewById(R.id.feedback_total);
         helper = (TextView) findViewById(R.id.helper);
         feedback_helper = (TextView) findViewById(R.id.feedback_helper);
+        feedback_total_helper = (TextView) findViewById(R.id.feedback_total_helper);
 
         give_feedback = (Button) findViewById(R.id.give_feedback);
         cancel = (Button) findViewById(R.id.cancel);
@@ -95,8 +99,6 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
 
                     description.setText(("Descrição: " + request.getString("description")));
 
-                    contact.setText(("Contacto: " + request.getString("contact")));
-
                     location.setText(("Localização: " + request.getString("location")));
 
 
@@ -125,10 +127,16 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                         helper_name = request.getString("helper");
                         helper.setText(("Ajudante: " + helper_name));
                         helper.setVisibility(View.VISIBLE);
+                        contact.setText(("Contacto: " + request.getString("helper_contact")));
+                        contact.setVisibility(View.VISIBLE);
+                        feedback_total_helper.setText(("Avaliação Total do Ajudante: " + request.getString("feedback_total_helper") + "/5"));
+                        feedback_total_helper.setVisibility(View.VISIBLE);
                     }
                     if (s.equals("ended")){
                         feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
                         feedback.setVisibility(View.VISIBLE);
+                        feedback_total.setText(("Avaliação Total do Utilizador: " + request.getString("feedback_total") + "/5"));
+                        feedback_total.setVisibility(View.VISIBLE);
                         feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
                         feedback_helper.setVisibility(View.VISIBLE);
                         if (request.getString("feedback_helper").equals("n")){

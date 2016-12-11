@@ -15,6 +15,7 @@ import org.json.JSONObject;
 public class RegisterActivity extends AppCompatActivity {
     private EditText name;
     private EditText email;
+    private EditText contact;
     private EditText pw;
     private EditText cpw;
     private Button register;
@@ -27,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         name = (EditText) findViewById(R.id.name);
         email = (EditText) findViewById(R.id.email);
+        contact = (EditText) findViewById(R.id.contact);
         pw = (EditText) findViewById(R.id.pw);
         cpw = (EditText) findViewById(R.id.cpw);
 
@@ -38,14 +40,15 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String n = name.getText().toString().trim();
                 String e = email.getText().toString().trim();
+                String c = contact.getText().toString().trim();
                 String p = pw.getText().toString().trim();
                 String cp = cpw.getText().toString().trim();
 
-                if (confirmInputs(n,e,p,cp)){
+                if (confirmInputs(n,e,c,p,cp)){
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
                     API r = new API();
-                    String result = r.userRegister(n, e, p);
+                    String result = r.userRegister(n, e, c, p);
                     JSONObject obj = null;
                     try {
                         obj = new JSONObject(result);
@@ -77,11 +80,16 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
-    private boolean confirmInputs(final String name, final String email, final String pw, final String cpw){
-        if (!name.isEmpty() && !email.isEmpty() && !pw.isEmpty() && !cpw.isEmpty()) {
+    private boolean confirmInputs(final String name, final String email, final String contact, final String pw, final String cpw){
+        if (!name.isEmpty() && !email.isEmpty() && !contact.isEmpty() && !pw.isEmpty() && !cpw.isEmpty()) {
             if (pw.compareTo(cpw)==0) {
                 if (email.matches("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$")){
-                    return true;
+                    if (contact.length()==9 && contact.matches("[0-9]+")){
+                        return true;
+                    }else {
+                        Toast.makeText(getApplicationContext(), "Número inválido!", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "E-mail inválido!", Toast.LENGTH_LONG).show();
                     return false;

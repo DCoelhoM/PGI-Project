@@ -53,21 +53,6 @@
                 android:backgroundTint="#e5e4e2"
                 android:textColor="#f2f2f2" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contacto(Insira um número válido):"
-                android:textColor="#f2f2f2"
-                android:id="@+id/contact_textView" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/contact"
-                android:maxLength="9"
-                android:backgroundTint="#e5e4e2"
-                android:textColor="#f2f2f2" />
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

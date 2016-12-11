@@ -46,13 +46,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Contacto"
-                android:textColor="#FFFFFF"
-                android:id="@+id/contact"
-                android:layout_marginTop="8dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="Localização"
                 android:textColor="#FFFFFF"
                 android:id="@+id/location"
@@ -102,6 +95,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Feedback Total"
+                android:textColor="#FFFFFF"
+                android:id="@+id/feedback_total"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Ajudante"
                 android:textColor="#FFFFFF"
                 android:id="@+id/helper"
@@ -110,9 +111,25 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Contacto do Ajudante"
+                android:textColor="#FFFFFF"
+                android:id="@+id/contact"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Feedback Ajudante"
                 android:textColor="#FFFFFF"
                 android:id="@+id/feedback_helper"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feedback Total Ajudante"
+                android:textColor="#FFFFFF"
+                android:id="@+id/feedback_total_helper"
                 android:visibility="gone"
                 android:layout_marginTop="8dp" />
 
