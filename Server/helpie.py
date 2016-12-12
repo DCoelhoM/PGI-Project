@@ -490,23 +490,22 @@ def acceptrequest():
                 cursor.execute(sql_accept)
                 title = results[0][1]
                 #Helper name
-                sql_helper = "SELECT name FROM users WHERE id=%i" % (user_id)
+                sql_helper = "SELECT name, contact FROM users WHERE id=%i" % (user_id)
                 cursor.execute(sql_helper)
                 helper_result = cursor.fetchall()
                 helper_name = helper_result[0][0]
-
+                helper_contact = helper_result[0][1]
                 sql_contact = "SELECT contact FROM users WHERE id=%i" % (results[0][2])
                 cursor.execute(sql_contact)
                 contact_result = cursor.fetchall()
                 contact = contact_result[0][0]
-                db.commit()
-
                 client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
                 client.messages.create(
                     to="+351"+contact,
                     from_="++13524780150",
-                    body="[HELPIE] O seu pedido " + title.decode('latin1') + " foi aceite por " + helper_name.decode('latin1') + ".",
+                    body="[HELPIE] O seu pedido " + title.decode('latin1') + " foi aceite por " + helper_name.decode('latin1') + "(" + str(helper_contact) + ").",
                 )
+                db.commit()
                 response = { "success" : 1, "msg" : "Request accepted with success."}
             elif results[0][0]=="active" and results[0][3]=="voluntary":
                 n_helpers = results[0][4]
