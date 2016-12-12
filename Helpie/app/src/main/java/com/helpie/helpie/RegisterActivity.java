@@ -1,18 +1,12 @@
 package com.helpie.helpie;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -27,7 +21,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button register;
     private Button login;
 
-    private String validate_code = "random_generated_code";
+    //private String validate_code = "random_generated_code";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +47,25 @@ public class RegisterActivity extends AppCompatActivity {
                 final String cp = cpw.getText().toString().trim();
 
                 if (confirmInputs(n,e,c,p,cp)){
-                    final EditText input = new EditText(RegisterActivity.this);
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    API r2 = new API();
+                    String result = r2.userRegister(n, e, c, p);
+                    JSONObject obj = null;
+                    try {
+                        obj = new JSONObject(result);
+                        if (obj.getInt("success") == 1) {
+                            Toast.makeText(getApplicationContext(), n + " registado com sucesso!", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Algo correu mal (E-mail em uso)!", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException ex) {
+                        Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
+                    }
+                    /*final EditText input = new EditText(RegisterActivity.this);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.MATCH_PARENT);
@@ -110,7 +122,8 @@ public class RegisterActivity extends AppCompatActivity {
                     } catch (JSONException ex) {
                         Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();
                         validate_code = "random_generated_code";
-                    }
+                    }*/
+
                 } else {
                     pw.setText("");
                     cpw.setText("");
