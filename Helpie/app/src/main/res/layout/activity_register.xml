@@ -72,7 +72,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Contacto:\n (Necessário para validar a conta)"
+                    android:text="Contacto:"
                     android:textColor="#f2f2f2"
                     android:id="@+id/contact_textView" />
 
@@ -81,21 +81,6 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/contact"
                     android:maxLength="9"
-                    android:backgroundTint="#e5e4e2"
-                    android:textColor="#f2f2f2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Codigo de Validação:"
-                    android:textColor="#f2f2f2"
-                    android:id="@+id/code_textView" />
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/code"
-                    android:maxLength="4"
                     android:backgroundTint="#e5e4e2"
                     android:textColor="#f2f2f2" />
 
