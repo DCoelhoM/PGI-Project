@@ -20,6 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class API {
     private String LOGIN_URL = "http://138.68.146.193:5000/login";
     private String REGISTER_URL = "http://138.68.146.193:5000/register";
+    private String CONFIRM_CONTACT_URL = "http://138.68.146.193:5000/confirmcontact";
 
 
     private String SAVE_LOCATION_URL = "http://138.68.146.193:5000/savelocation";
@@ -82,6 +83,15 @@ public class API {
         register_data += "}";
         return sendPOST(REGISTER_URL,register_data);
     }
+
+    public String confirmContact(String contact){
+        String contact_data = "{";
+        contact_data += "\"contact\"" + ":" + "\"" + contact + "\"";
+        contact_data += "}";
+        return sendPOST(CONFIRM_CONTACT_URL,contact_data);
+
+    }
+
     public String userLogin(String email, String password){
         String login_data = "{";
         login_data += "\"email\"" + ":" + "\"" + email + "\"" + "," + "\"password\"" + ":" + "\"" + password + "\"";

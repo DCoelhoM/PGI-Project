@@ -1,6 +1,8 @@
 import MySQLdb
 import bcrypt
 import json
+import random
+import string
 from flask import *
 from math import radians, cos, sin, asin, sqrt
 from twilio.rest import TwilioRestClient
@@ -45,6 +47,28 @@ def register():
         response = {"success" : 0, "msg" : "Error."}
         return json.dumps(response)
 
+
+@app.route('/confirmcontact', methods=["GET", "POST"])
+def confirmcontact():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        contact = data['contact']
+        try:
+            char_set = string.ascii_uppercase + string.digits
+            random_code = ''.join(random.SystemRandom().choice(char_set) for _ in range(4))
+            client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
+            client.messages.create(
+                to="+351"+contact,
+                from_="++13524780150",
+                body="[HELPIE] Codigo de Validacao: " + random_code,
+            )
+            response = { "success" : 1, "code" : random_code, "msg" : "Code sended"}
+        except:
+            response = { "success" : 0, "msg" : "Error sending msg."}
+    else:
+        response = {"success" : 0, "msg" : "Error."}
+    return json.dumps(response)
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
