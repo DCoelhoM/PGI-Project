@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 11, 2016 at 11:12 PM
+-- Generation Time: Dec 12, 2016 at 03:15 PM
 -- Server version: 5.7.16-0ubuntu0.16.04.1
 -- PHP Version: 7.0.8-0ubuntu0.16.04.3
 
@@ -70,7 +70,8 @@ CREATE TABLE `requests` (
   `feedback_owner` int(11) DEFAULT NULL,
   `feedback_helper` int(11) DEFAULT NULL,
   `type` varchar(16) NOT NULL DEFAULT 'normal',
-  `n_helpers` int(11) NOT NULL DEFAULT '0'
+  `n_helpers` int(11) NOT NULL DEFAULT '0',
+  `max_helpers` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

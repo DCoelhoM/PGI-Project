@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 obj = new JSONObject(result);
                 if (obj.getInt("success")==1) {
-                    SaveSharedPreference.setUser(MainActivity.this,obj.getInt("id"),obj.getString("name"),obj.getString("email"));
+                    SaveSharedPreference.setUser(MainActivity.this,obj.getInt("id"),obj.getString("name"),obj.getString("email"),obj.getString("contact"),obj.getString("type"));
                     Toast.makeText(getApplicationContext(), "Logado!", Toast.LENGTH_LONG).show();
                     return true;
                 } else {

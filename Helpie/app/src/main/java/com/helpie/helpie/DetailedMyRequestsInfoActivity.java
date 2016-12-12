@@ -84,12 +84,12 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
             try {
                 request = new JSONObject(result);
                 if (request.getInt("success") == 1) {
-                    String s =  request.getString("state");
-                    if (s.equals("active")){
+                    String s = request.getString("state");
+                    if (s.equals("active")) {
                         state.setText("Estado: Ativo");
-                    } else if (s.equals("accepted")){
+                    } else if (s.equals("accepted")) {
                         state.setText("Estado: Aceite");
-                    } else if (s.equals("ended")){
+                    } else if (s.equals("ended")) {
                         state.setText("Estado: Terminado");
                     } else {
                         state.setText("Estado: Cancelado");
@@ -101,10 +101,9 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
 
                     location.setText(("Localização: " + request.getString("location")));
 
-
-                    JSONArray i_list= request.getJSONArray("list");
+                    JSONArray i_list = request.getJSONArray("list");
                     int list_size = i_list.length();
-                    if (list_size>0) {
+                    if (list_size > 0) {
                         items_list.setVisibility(View.VISIBLE);
                         layout.setVisibility(View.VISIBLE);
                         for (int i = 0; i < list_size; i++) {
@@ -115,37 +114,48 @@ public class DetailedMyRequestsInfoActivity extends AppCompatActivity {
                         }
                     }
 
+
                     created.setText(("Data de Criação: " + request.getString("created")));
 
                     deadline.setText(("Data Limite: " + request.getString("deadline")));
 
-                    if(s.equals("accepted")){
-                        finished.setVisibility(View.VISIBLE);
-                    }
-
-                    if (s.equals("accepted") || s.equals("ended")){
-                        helper_name = request.getString("helper");
-                        helper.setText(("Ajudante: " + helper_name));
-                        helper.setVisibility(View.VISIBLE);
-                        contact.setText(("Contacto: " + request.getString("helper_contact")));
-                        contact.setVisibility(View.VISIBLE);
-                        feedback_total_helper.setText(("Avaliação Total do Ajudante: " + request.getString("feedback_total_helper") + "/5"));
-                        feedback_total_helper.setVisibility(View.VISIBLE);
-                    }
-                    if (s.equals("ended")){
-                        feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
-                        feedback.setVisibility(View.VISIBLE);
-                        feedback_total.setText(("Avaliação Total do Utilizador: " + request.getString("feedback_total") + "/5"));
-                        feedback_total.setVisibility(View.VISIBLE);
-                        feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
-                        feedback_helper.setVisibility(View.VISIBLE);
-                        if (request.getString("feedback_helper").equals("n")){
-                            give_feedback.setVisibility(View.VISIBLE);
+                    if (request.getString("type").equals("normal")) {
+                        if (s.equals("accepted")) {
+                            finished.setVisibility(View.VISIBLE);
                         }
-                    }
 
-                    if(s.equals("active")){
-                        cancel.setVisibility(View.VISIBLE);
+                        if (s.equals("accepted") || s.equals("ended")) {
+                            helper_name = request.getString("helper");
+                            helper.setText(("Ajudante: " + helper_name));
+                            helper.setVisibility(View.VISIBLE);
+                            contact.setText(("Contacto: " + request.getString("helper_contact")));
+                            contact.setVisibility(View.VISIBLE);
+                            feedback_total_helper.setText(("Avaliação Total do Ajudante: " + request.getString("feedback_total_helper") + "/5"));
+                            feedback_total_helper.setVisibility(View.VISIBLE);
+                        }
+                        if (s.equals("ended")) {
+                            feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
+                            feedback.setVisibility(View.VISIBLE);
+                            feedback_total.setText(("Avaliação Total do Utilizador: " + request.getString("feedback_total") + "/5"));
+                            feedback_total.setVisibility(View.VISIBLE);
+                            feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
+                            feedback_helper.setVisibility(View.VISIBLE);
+                            if (request.getString("feedback_helper").equals("n")) {
+                                give_feedback.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        if (s.equals("active")) {
+                            cancel.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        if (s.equals("canceled")){
+                            state.setText("Estado: Terminado");
+                        }
+                        helper.setText(("Número de Ajudantes: " + request.getString("n_helpers") + "/" + request.getString("max_helpers")));
+                        helper.setVisibility(View.VISIBLE);
+                        finished.setText("Pedido Concluído");
+                        finished.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), "Algo correu mal!", Toast.LENGTH_LONG).show();

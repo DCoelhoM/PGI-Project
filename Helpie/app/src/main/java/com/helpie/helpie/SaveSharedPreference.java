@@ -12,20 +12,24 @@ import android.preference.PreferenceManager;
 
 public class SaveSharedPreference {
     static final String PREF_USER_ID = "id";
-    static final String PREF_USER_NAME= "username";
-    static final String PREF_USER_EMAIL= "email";
-    static final String PREF_DISTANCE= "distance";
+    static final String PREF_USER_NAME = "username";
+    static final String PREF_USER_EMAIL = "email";
+    static final String PREF_USER_CONTACT = "contact";
+    static final String PREF_USER_TYPE = "type";
+    static final String PREF_DISTANCE = "distance";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static void setUser(Context ctx, int id, String name, String mail)
+    public static void setUser(Context ctx, int id, String name, String mail, String contact, String type)
     {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.putInt(PREF_USER_ID, id);
         editor.putString(PREF_USER_NAME, name);
         editor.putString(PREF_USER_EMAIL, mail);
+        editor.putString(PREF_USER_CONTACT, contact);
+        editor.putString(PREF_USER_TYPE, type);
         editor.putInt(PREF_DISTANCE, 30);
         editor.commit();
     }
@@ -45,6 +49,16 @@ public class SaveSharedPreference {
         return getSharedPreferences(ctx).getString(PREF_USER_EMAIL, "");
     }
 
+    public static String getContact(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString(PREF_USER_CONTACT, "");
+    }
+
+    public static String getType(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString(PREF_USER_TYPE, "normal");
+    }
+
     public static int getDistance(Context ctx)
     {
         return getSharedPreferences(ctx).getInt(PREF_DISTANCE, 30);
@@ -59,7 +73,7 @@ public class SaveSharedPreference {
 
     public static void clearAll(Context ctx)
     {
-        setUser(ctx,0,"","");
+        setUser(ctx,0,"","","","");
     }
 
 

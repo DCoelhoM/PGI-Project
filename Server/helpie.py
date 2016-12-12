@@ -55,14 +55,14 @@ def login():
         password = data['password'].encode('utf-8')
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_check_email = "SELECT id, name, email, contact, encrypted_password FROM users WHERE email='%s'" % (email)
+        sql_check_email = "SELECT id, name, email, contact, encrypted_password, type FROM users WHERE email='%s'" % (email)
         try:
             cursor.execute(sql_check_email)
             n_results = cursor.rowcount
             if n_results==1:
                 result = cursor.fetchall()
                 if result[0][4] == bcrypt.hashpw(password, result[0][4]):
-                    response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1].decode('latin1'), "email" : result[0][2], "contact" : result[0][3]}
+                    response = { "success" : 1, "msg" : "Login with success.", "id" : result[0][0], "name" : result[0][1].decode('latin1'), "email" : result[0][2], "contact" : result[0][3], "type" : result[0][5]}
                 else:
                     response = { "success" : 0, "msg" : "Wrong credentials."}
             else:
@@ -174,6 +174,7 @@ def createrequest():
         item_list = data['list']
         loc_id = int(data['loc_id'])
         deadline = data['deadline']
+        max_helpers = int(data['max_helpers'])
 
         #from datetime import datetime
         #datetime_object = datetime.strptime(deadline,'%Y-%m-%d %H:%M')
@@ -193,7 +194,7 @@ def createrequest():
             if user_type == "normal":
                 sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline) VALUES(%i,'%s','%s',%i,'%s')" % (user_id,title,desc,loc_id,deadline)
             else:
-                sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline, type) VALUES(%i,'%s','%s',%i,'%s','%s')" % (user_id,title,desc,loc_id,deadline, "voluntary")
+                sql_loc = "INSERT INTO requests(owner_id, title, description, loc_id, deadline, type, max_helpers) VALUES(%i,'%s','%s',%i,'%s','%s',%i)" % (user_id,title,desc,loc_id,deadline, "voluntary", max_helpers)
             cursor.execute(sql_loc)
             db.commit()
             req_id=cursor.lastrowid
@@ -222,7 +223,7 @@ def nearbyrequests():
         dist = int(data['distance'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT id, owner_id, title, description, loc_id, deadline, type FROM requests WHERE owner_id!=%i AND (id, %i) NOT IN (SELECT req_id, user_id FROM voluntary_helpers) AND state='active'" % (user_id,user_id)
+        sql_requests = "SELECT id, owner_id, title, description, loc_id, deadline, type, n_helpers, max_helpers FROM requests WHERE owner_id!=%i AND n_helpers < max_helpers AND (id, %i) NOT IN (SELECT req_id, user_id FROM voluntary_helpers) AND state='active'" % (user_id,user_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -413,6 +414,64 @@ def listacceptedrequests():
         response = {"state" : 0, "msg" : "Error."}
         return json.dumps(response)
 
+@app.route('/listacceptedrequestsvoluntary', methods=["GET", "POST"])
+def listacceptedrequestsvoluntary():
+    response = {}
+    if request.method == "POST":
+        data = json.loads(request.data)
+        user_id = int(data['user_id'])
+        db = MySQLdb.connect("localhost","root","academica","helpie")
+        cursor = db.cursor()
+        sql_voluntary = "SELECT req_id, user_id FROM voluntary_helpers WHERE user_id=%i" % (user_id)
+        try:
+            cursor.execute(sql_voluntary)
+            n_results = cursor.rowcount
+            if n_results>0:
+                results = cursor.fetchall()
+                requests = []
+                for row in results:
+                    r_id = row[0]
+                    sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline FROM requests WHERE id=%i AND state='active'" % (r_id)
+                    cursor.execute(sql_requests)
+                    n_reqs = cursor.rowcount
+                    if n_reqs>0:
+                        req = cursor.fetchall()
+                        owner_id = req[0][0]
+                        title = req[0][1]
+                        description = req[0][2]
+                        loc_id = req[0][3]
+                        created_at = req[0][4]
+                        deadline = req[0][5]
+                        #Owner Name and Contact
+                        sql_owner = "SELECT name, contact FROM users WHERE id=%i" % (owner_id)
+                        cursor.execute(sql_owner)
+                        owner_result = cursor.fetchall()
+                        owner_name = owner_result[0][0]
+                        contact = owner_result[0][1]
+                        #Location
+                        sql_loc = "SELECT name FROM locations WHERE id=%i" % (loc_id)
+                        cursor.execute(sql_loc)
+                        loc_result =  cursor.fetchall()
+                        loc_name = loc_result[0][0]
+                        #Items
+                        sql_items = "SELECT info FROM items WHERE request_id=%i" % (r_id)
+                        cursor.execute(sql_items)
+                        items_result = cursor.fetchall()
+                        items = []
+                        for item in items_result:
+                            items.append(item[0].decode('latin1'))
+                        requests.append({"id": r_id, "owner_id": owner_id, "owner_name": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "contact":contact})
+                response = {"success" : 1, "msg" : "Voluntary requests found","requests" : requests}
+            else:
+                response = { "success" : 0, "msg" : "No requests found."}
+        except:
+            response = { "success" : 0, "msg" : "Error accessing DB."}
+        db.close()
+        return json.dumps(response)
+    else:
+        response = {"state" : 0, "msg" : "Error."}
+        return json.dumps(response)
+
 @app.route('/acceptrequest', methods=["GET", "POST"])
 def acceptrequest():
     response = {}
@@ -436,8 +495,8 @@ def acceptrequest():
                 helper_result = cursor.fetchall()
                 helper_name = helper_result[0][0]
 
-                sql_contact = "SELECT contact FROM users WHERE id=%i" % (owner_id)
-                cursor.execute(sql_helper)
+                sql_contact = "SELECT contact FROM users WHERE id=%i" % (results[0][2])
+                cursor.execute(sql_contact)
                 contact_result = cursor.fetchall()
                 contact = contact_result[0][0]
                 db.commit()
@@ -477,7 +536,7 @@ def requestinfo():
         req_id = int(data['req_id'])
         db = MySQLdb.connect("localhost","root","academica","helpie")
         cursor = db.cursor()
-        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper, type FROM requests WHERE id=%i" % (req_id)
+        sql_requests = "SELECT owner_id, title, description, loc_id, created_at, deadline, state, helper_id,feedback_owner,feedback_helper, type, n_helpers, max_helpers FROM requests WHERE id=%i" % (req_id)
         try:
             cursor.execute(sql_requests)
             n_results = cursor.rowcount
@@ -491,7 +550,9 @@ def requestinfo():
                 deadline = results[0][5]
                 state = results[0][6]
                 helper_id = results[0][7]
-                req_type =results[0][10]
+                req_type = results[0][10]
+                n_helpers = results[0][11]
+                max_helpers = results[0][12]
 
                 feedback = results[0][8]
                 if feedback == None:
@@ -556,9 +617,9 @@ def requestinfo():
                         total_feedback_helper = total_feedback_helper / len(total_fb_helper_result)
 
                 if state == "active" and state == "canceled":
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "type": req_type}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "type": req_type, "n_helpers": n_helpers, "max_helpers": max_helpers}
                 else:
-                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "type": req_type, "helper_contact": helper_contact, "helper": helper_name.decode('latin1'), "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
+                    response = {"success" : 1, "msg" : "Request found.", "owner": owner_name.decode('latin1'),"title": title.decode('latin1'), "description": description.decode('latin1'), "list": items, "location": loc_name.decode('latin1'), "longitude": longitude, "latitude": latitude ,"created": created_at.strftime('%Y-%m-%d %H:%M') ,"deadline": deadline.strftime('%Y-%m-%d %H:%M'), "state": state, "contact": owner_contact, "type": req_type, "n_helpers": n_helpers, "max_helpers": max_helpers, "helper_contact": helper_contact, "helper": helper_name.decode('latin1'), "helper_id": helper_id, "feedback": feedback ,"feedback_helper": feedback_helper, "feedback_total": total_feedback ,"feedback_total_helper": total_feedback_helper}
             else:
                 response = { "success" : 0, "msg" : "Request not found."}
         except:

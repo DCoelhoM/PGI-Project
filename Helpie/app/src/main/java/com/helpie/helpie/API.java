@@ -33,6 +33,7 @@ public class API {
 
     private String LIST_MY_REQUESTS_URL = "http://138.68.146.193:5000/listmyrequests";
     private String LIST_ACCEPTED_REQUESTS_URL = "http://138.68.146.193:5000/listacceptedrequests";
+    private String LIST_ACCEPTED_REQUESTS_VOLUNTARY_URL = "http://138.68.146.193:5000/listacceptedrequestsvoluntary";
 
     private String REQUEST_INFO_URL = "http://138.68.146.193:5000/requestinfo";
 
@@ -110,7 +111,7 @@ public class API {
         return sendPOST(DELETE_LOCATION_URL,location_data);
     }
 
-    public String createRequest(int user_id, String title, String description,int loc_id, ArrayList<String> items, Date deadline){
+    public String createRequest(int user_id, String title, String description, int loc_id, ArrayList<String> items, Date deadline, int max_helpers){
         String request_data = "{";
         String item_list = "[";
         for (int i=0; i < items.size(); i++){
@@ -122,7 +123,7 @@ public class API {
         item_list +="]";
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String deadline_date = dateFormat.format(deadline);
-        request_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"" + "," + "\"title\"" + ":" + "\"" + title + "\"" + "," + "\"description\"" + ":" + "\"" + description + "\"" + "," + "\"loc_id\"" + ":" + "\"" + String.valueOf(loc_id) + "\"" + "," + "\"list\"" + ":" + item_list  + "," + "\"deadline\"" + ":" + "\"" + deadline_date + "\"";
+        request_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"" + "," + "\"title\"" + ":" + "\"" + title + "\"" + "," + "\"description\"" + ":" + "\"" + description + "\"" + "," + "\"max_helpers\"" + ":" + "\"" + max_helpers + "\""+ "," + "\"loc_id\"" + ":" + "\"" + String.valueOf(loc_id) + "\"" + "," + "\"list\"" + ":" + item_list  + "," + "\"deadline\"" + ":" + "\"" + deadline_date + "\"";
         request_data += "}";
         return sendPOST(CREATE_REQUEST_URL,request_data);
     }
@@ -154,6 +155,13 @@ public class API {
         user_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"";
         user_data += "}";
         return sendPOST(LIST_ACCEPTED_REQUESTS_URL,user_data);
+    }
+
+    public String listAcceptedRequestsVoluntary(int user_id){
+        String user_data = "{";
+        user_data += "\"user_id\"" + ":" + "\"" + String.valueOf(user_id) + "\"";
+        user_data += "}";
+        return sendPOST(LIST_ACCEPTED_REQUESTS_VOLUNTARY_URL,user_data);
     }
 
     public String requestInfo(int req_id){

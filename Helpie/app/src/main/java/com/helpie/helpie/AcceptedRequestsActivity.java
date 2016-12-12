@@ -34,42 +34,66 @@ public class AcceptedRequestsActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         API r = new API();
         String result = r.listAcceptedRequests(SaveSharedPreference.getID(AcceptedRequestsActivity.this));
+        String result_voluntary = r.listAcceptedRequestsVoluntary(SaveSharedPreference.getID(AcceptedRequestsActivity.this));
         JSONObject obj = null;
+        JSONObject obj_voluntary = null;
         try {
             obj = new JSONObject(result);
-            if (obj.getInt("success") == 1) {
-                JSONArray requests = obj.getJSONArray("requests");
-                JSONObject req;
-
+            obj_voluntary = new JSONObject(result_voluntary);
+            if (obj.getInt("success") == 1 || obj_voluntary.getInt("success") == 1) {
                 int dpValue = 5; // margin in dips
                 float d = AcceptedRequestsActivity.this.getResources().getDisplayMetrics().density;
-                int margin = (int)(dpValue * d);
+                int margin = (int) (dpValue * d);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 params.setMargins(0, margin, 0, 0);
+                if (obj.getInt("success") == 1) {
+                    JSONArray requests = obj.getJSONArray("requests");
+                    JSONObject req;
 
-                for (int i = 0; i < requests.length(); i++) {
-                    req=requests.getJSONObject(i);
-                    String state = req.getString("state");
+                    for (int i = 0; i < requests.length(); i++) {
+                        req = requests.getJSONObject(i);
+                        String state = req.getString("state");
 
-                    Button bt = new Button(AcceptedRequestsActivity.this);
-                    bt.setText(req.getString("title"));
-                    bt.setId(req.getInt("id"));
-                    bt.setLayoutParams(params);
-                    bt.setOnClickListener(new View.OnClickListener(){
-                        public void onClick(View v) {
-                            onRequestPressed(v);
+                        Button bt = new Button(AcceptedRequestsActivity.this);
+                        bt.setText(req.getString("title"));
+                        bt.setId(req.getInt("id"));
+                        bt.setLayoutParams(params);
+                        bt.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                onRequestPressed(v);
+                            }
+                        });
+
+                        if (state.equals("accepted")) {
+                            bt.setBackgroundResource(R.drawable.active_request);
+                            active.addView(bt);
+                        } else if (state.equals("ended")) {
+                            bt.setBackgroundResource(R.drawable.ended_request);
+                            ended.addView(bt);
                         }
-                    });
+                    }
+                }
+                if (obj_voluntary.getInt("success") == 1) {
+                    JSONArray requests = obj_voluntary.getJSONArray("requests");
+                    JSONObject req;
 
-                    if (state.equals("accepted")){
+                    for (int i = 0; i < requests.length(); i++) {
+                        req = requests.getJSONObject(i);
+                        Button bt = new Button(AcceptedRequestsActivity.this);
+                        bt.setText(req.getString("title"));
+                        bt.setId(req.getInt("id"));
+                        bt.setLayoutParams(params);
+                        bt.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                onRequestPressed(v);
+                            }
+                        });
+
                         bt.setBackgroundResource(R.drawable.active_request);
                         active.addView(bt);
-                    } else if (state.equals("ended")){
-                        bt.setBackgroundResource(R.drawable.ended_request);
-                        ended.addView(bt);
                     }
                 }
             } else {

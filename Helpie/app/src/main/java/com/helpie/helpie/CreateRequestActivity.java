@@ -53,6 +53,9 @@ public class CreateRequestActivity extends AppCompatActivity {
     LinkedList<String> loc_array = new LinkedList<>();
     LinkedList<Integer> loc_array_id = new LinkedList<>();
 
+    private TextView max_helpers_view;
+    private EditText max_helpers;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +76,13 @@ public class CreateRequestActivity extends AppCompatActivity {
         create = (Button) findViewById(R.id.create);
         back = (Button) findViewById(R.id.back);
 
-
+        final String user_type = SaveSharedPreference.getType(CreateRequestActivity.this);
+        max_helpers_view = (TextView) findViewById(R.id.max_helpers_textView);
+        max_helpers = (EditText) findViewById(R.id.max_helpers);
+        if(user_type.equals("voluntary")){
+            max_helpers_view.setVisibility(View.VISIBLE);
+            max_helpers.setVisibility(View.VISIBLE);
+        }
 
         deadline = (TextView) findViewById(R.id.deadline);
         deadline_date_time  = Calendar.getInstance();
@@ -167,11 +176,17 @@ public class CreateRequestActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String t = title.getText().toString().trim();
                 String desc = description.getText().toString().trim();
+                String m = max_helpers.getText().toString().trim();
 
-                if(!t.isEmpty() && !desc.isEmpty() && confirmItems()) {
+                if(!t.isEmpty() && !desc.isEmpty() && ((user_type.equals("voluntary") && !m.isEmpty() && m.matches("[0-9]+")) || user_type.equals("normal")) && confirmItems()) {
                     ArrayList<String> item_list = new ArrayList<String>();
                     for (int i = 0; i < items.size(); i++) {
                         item_list.add(items.get(i).getText().toString().trim());
+                    }
+
+                    int max = 1;
+                    if (user_type.equals("voluntary")){
+                        max = Integer.valueOf(m);
                     }
 
                     int loc_id = loc_array_id.get(locations.getSelectedItemPosition());
@@ -179,7 +194,7 @@ public class CreateRequestActivity extends AppCompatActivity {
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
                     API r = new API();
-                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, loc_id, item_list, deadline_date_time.getTime());
+                    String result = r.createRequest(SaveSharedPreference.getID(CreateRequestActivity.this), t, desc, loc_id, item_list, deadline_date_time.getTime(), max);
                     JSONObject obj = null;
                     try {
                         obj = new JSONObject(result);

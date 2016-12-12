@@ -87,31 +87,19 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
             try {
                 request = new JSONObject(result);
                 if (request.getInt("success") == 1) {
-                    String s =  request.getString("state");
-                    if (s.equals("accepted")){
-                        state.setText("Estado: Aceite");
-                    } else{
-                        state.setText("Estado: Terminado");
-                    }
-
                     title.setText(("Título: " + request.getString("title")));
 
                     description.setText(("Descrição: " + request.getString("description")));
 
-                    owner_name = request.getString("owner");
-                    owner.setText(("Criado por: " + owner_name));
-
                     contact.setText(("Contacto: " + request.getString("contact")));
-
-                    feedback_total.setText(("Avaliação Total do Utilizador: " + request.getString("feedback_total") + "/5"));
 
                     location.setText(("Localização: " + request.getString("location")));
                     latitude = request.getString("latitude");
                     longitude = request.getString("longitude");
 
-                    JSONArray i_list= request.getJSONArray("list");
+                    JSONArray i_list = request.getJSONArray("list");
                     int list_size = i_list.length();
-                    if (list_size>0) {
+                    if (list_size > 0) {
                         items_list.setVisibility(View.VISIBLE);
                         layout.setVisibility(View.VISIBLE);
                         for (int i = 0; i < list_size; i++) {
@@ -126,22 +114,41 @@ public class DetailedAcceptedRequestsInfoActivity extends AppCompatActivity {
 
                     deadline.setText(("Data Limite: " + request.getString("deadline")));
 
-                    if (s.equals("accepted") || s.equals("ended")){
-                        helper.setText(("Ajudante: " + request.getString("helper")));
-                        helper.setVisibility(View.VISIBLE);
-                    }
-                    if (s.equals("ended")){
-                        feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
-                        feedback.setVisibility(View.VISIBLE);
-                        feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
-                        feedback_helper.setVisibility(View.VISIBLE);
-                        feedback_total_helper.setText(("Avaliação Total do Ajudante: " + request.getString("feedback_total_helper") + "/5"));
-                        if (request.getString("feedback").equals("n")){
-                            give_feedback.setVisibility(View.VISIBLE);
+                    if (request.getString("type").equals("normal")) {
+                        String s = request.getString("state");
+                        if (s.equals("accepted")) {
+                            state.setText("Estado: Aceite");
+                        } else {
+                            state.setText("Estado: Terminado");
                         }
-                    }
 
-                    if(s.equals("accepted")){
+                        owner_name = request.getString("owner");
+                        owner.setText(("Criado por: " + owner_name));
+
+                        feedback_total.setText(("Avaliação Total do Utilizador: " + request.getString("feedback_total") + "/5"));
+
+                        if (s.equals("accepted") || s.equals("ended")) {
+                            helper.setText(("Ajudante: " + request.getString("helper")));
+                            helper.setVisibility(View.VISIBLE);
+                        }
+                        if (s.equals("ended")) {
+                            feedback.setText(("Avaliação do Utilizador: " + request.getString("feedback") + "/5"));
+                            feedback.setVisibility(View.VISIBLE);
+                            feedback_helper.setText(("Avaliação do Ajudante: " + request.getString("feedback_helper") + "/5"));
+                            feedback_helper.setVisibility(View.VISIBLE);
+                            feedback_total_helper.setText(("Avaliação Total do Ajudante: " + request.getString("feedback_total_helper") + "/5"));
+                            if (request.getString("feedback").equals("n")) {
+                                give_feedback.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        if (s.equals("accepted")) {
+                            directions.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        feedback_total.setVisibility(View.GONE);
+                        owner.setVisibility(View.GONE);
+                        state.setText(("[VOLUNTARIADO]" + " - " + request.getString("owner")));
                         directions.setVisibility(View.VISIBLE);
                     }
                 } else {
